@@ -1,11 +1,13 @@
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args){
@@ -18,8 +20,13 @@ public class Main {
             String json = EntityUtils.toString(response.getEntity());
             System.out.println(json);
 
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            ObjectMapper mapper = new ObjectMapper();
+            List<Project> projects = mapper.readValue(json, new TypeReference<List<Project>>(){});
+
+            for(Project project: projects){
+                System.out.println(project.getName());
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
