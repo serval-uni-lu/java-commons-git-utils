@@ -65,15 +65,16 @@ public class Gitlab {
     }
 
     public void cloneProjects(List<Project> projects, String location, String branch) {
-        File folderLocation = new File(location);
+        File parent = new File(location);
 
-        if(!folderLocation.isDirectory()){
+        if(!parent.isDirectory()){
             return;
         }
 
         for(Project project: projects) {
             try {
-                cloneRepository(project.getHttpUrlToRepo(), folderLocation, branch);
+                File destination = new File(parent, project.getName());
+                cloneRepository(project.getHttpUrlToRepo(), destination, branch);
             } catch (GitAPIException e) {
                 e.printStackTrace();
             }
