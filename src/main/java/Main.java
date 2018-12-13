@@ -4,12 +4,12 @@ public class Main {
     public static void main(String[] args){
         Gitlab gitlab = new Gitlab()
                 .setToken("")
-                .setUrl("");
+                .setUrl("")
+                .setCredentials("", "");
 
-        List<Project> projects = gitlab.findProjectByGroupName("Testfactory");
+        List<Project> projects = gitlab.findProjectByGroupName("");
 
-        for(Project project: projects) {
-            System.out.println(project.getName());
-        }
+        String location = "";
+        gitlab.cloneProjects(projects, location, "");
     }
 }

@@ -1,9 +1,17 @@
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class Gitlab {
     private String api;
     private String url;
     private String token;
+    private UsernamePasswordCredentialsProvider credentials;
 
     Gitlab(){
         api = "/api/v4";
@@ -16,6 +24,11 @@ public class Gitlab {
 
     public Gitlab setToken(String token) {
         this.token = token;
+        return this;
+    }
+
+    public Gitlab setCredentials(String username, String password) {
+        credentials = new UsernamePasswordCredentialsProvider(username, password);
         return this;
     }
 
@@ -49,5 +62,39 @@ public class Gitlab {
     public List<Project> findProjectByGroupId(int groupId){
         String request = url + api + "/groups/" + groupId + "/projects";
         return RestConnection.getObjectList(request, token, Project.class);
+    }
+
+    public void cloneProjects(List<Project> projects, String location, String branch) {
+        File folderLocation = new File(location);
+
+        if(!folderLocation.isDirectory()){
+            return;
+        }
+
+        for(Project project: projects) {
+            try {
+                cloneRepository(project.getHttpUrlToRepo(), folderLocation, branch);
+            } catch (GitAPIException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void cloneRepository(String url, File localFolder, String branch) throws GitAPIException {
+        if(localFolder.exists()){
+            try {
+                FileUtils.deleteDirectory(localFolder);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Git.cloneRepository()
+                .setURI(url)
+                .setCredentialsProvider(credentials)
+                .setBranch(branch)
+                .setDirectory(localFolder)
+                .call();
     }
 }
