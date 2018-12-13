@@ -1,4 +1,4 @@
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -7,7 +7,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class RestConnection {
@@ -47,7 +46,8 @@ public class RestConnection {
         T object;
 
         try {
-            object = mapper.readValue(json, type);
+            JavaType javaType = mapper.getTypeFactory().constructType(type);
+            object = mapper.readValue(json, javaType);
         } catch (IOException e) {
             object = null;
         }
@@ -55,7 +55,7 @@ public class RestConnection {
         return object;
     }
 
-    static public <T> List<T> getObjectList(String request, String token) {
+    static public <T> List<T> getObjectList(String request, String token, Class<T> type) {
         String json = RestConnection.getRequest(request, token);
 
         if(json.isEmpty()) {
@@ -65,7 +65,8 @@ public class RestConnection {
         List<T> objects;
 
         try {
-            objects = mapper.readValue(json, new TypeReference<List<T>>(){});
+            JavaType javaType = mapper.getTypeFactory().constructCollectionType(List.class, type);
+            objects = mapper.readValue(json, javaType);
         } catch (IOException e) {
             objects = null;
         }

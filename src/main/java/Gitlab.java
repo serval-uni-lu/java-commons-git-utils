@@ -6,7 +6,7 @@ public class Gitlab {
     private String token;
 
     Gitlab(){
-        api = "api/v4/";
+        api = "/api/v4";
     }
 
     public Gitlab setUrl(String url) {
@@ -21,7 +21,7 @@ public class Gitlab {
 
     public List<Group> getGroups() {
         String request = url + api + "/groups";
-        return RestConnection.getObjectList(request, token);
+        return RestConnection.getObjectList(request, token, Group.class);
     }
 
     public Group findGroupByName(String name) {
@@ -48,6 +48,6 @@ public class Gitlab {
 
     public List<Project> findProjectByGroupId(int groupId){
         String request = url + api + "/groups/" + groupId + "/projects";
-        return RestConnection.getObjectList(request, token);
+        return RestConnection.getObjectList(request, token, Project.class);
     }
 }

@@ -47,6 +47,7 @@ public class Project {
     private String merge_method;
     private int approvals_before_merge;
     private boolean mirror;
+    private boolean merge_requests_enabled;
 
     @JsonGetter("id")
     public int getId() {
@@ -454,5 +455,15 @@ public class Project {
     @JsonSetter("namespace")
     public void setNamespace(Map<String, String> namespace) {
         this.namespace = namespace;
+    }
+
+    @JsonGetter("merge_requests_enabled")
+    public boolean isMergeRequestsEnabled() {
+        return merge_requests_enabled;
+    }
+
+    @JsonSetter("merge_requests_enabled")
+    public void setMergeRequestsEnabled(boolean merge_requests_enabled) {
+        this.merge_requests_enabled = merge_requests_enabled;
     }
 }
