@@ -60,7 +60,7 @@ public class Gitlab {
     }
 
     public List<Project> findProjectByGroupId(int groupId){
-        String request = url + api + "/groups/" + groupId + "/projects";
+        String request = url + api + "/groups/" + groupId + "/projects?per_page=100";
         return RestConnection.getObjectList(request, token, Project.class);
     }
 
