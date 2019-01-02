@@ -1,4 +1,4 @@
-package api;
+package org.gitlabloader.api;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

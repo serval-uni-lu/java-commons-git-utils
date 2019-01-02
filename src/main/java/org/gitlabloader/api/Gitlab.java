@@ -1,4 +1,4 @@
-package api;
+package org.gitlabloader.api;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -16,7 +16,7 @@ public class Gitlab {
     private UsernamePasswordCredentialsProvider credentials;
 
     public Gitlab(){
-        api = "/api/v4";
+        api = "/org/gitlabloader/api/v4";
     }
 
     public Gitlab setUrl(String url) {

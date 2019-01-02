@@ -1,5 +1,5 @@
-import api.Gitlab;
-import api.Project;
+import org.gitlabloader.api.Gitlab;
+import org.gitlabloader.api.Project;
 
 import java.util.List;
 
