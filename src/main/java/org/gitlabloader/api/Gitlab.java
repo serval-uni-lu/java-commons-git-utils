@@ -7,7 +7,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class Gitlab {
     private String api;
@@ -68,6 +70,10 @@ public class Gitlab {
     }
 
     public void cloneProjects(List<Project> projects, String location, String branch) {
+        cloneProjects(projects, location, branch, Collections.emptyMap());
+    }
+
+    public void cloneProjects(List<Project> projects, String location, String defaultBranch, Map<String, String> branchException) {
         File parent = new File(location);
 
         if(!parent.isDirectory()){
@@ -77,6 +83,8 @@ public class Gitlab {
         for(Project project: projects) {
             try {
                 File destination = new File(parent, project.getName());
+                String projectName = project.getName();
+                String branch = branchException.getOrDefault(projectName, defaultBranch);
                 cloneRepository(project.getHttpUrlToRepo(), destination, branch);
             } catch (GitAPIException e) {
                 e.printStackTrace();
