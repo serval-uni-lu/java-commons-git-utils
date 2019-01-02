@@ -1,3 +1,6 @@
+import api.Gitlab;
+import api.Project;
+
 import java.util.List;
 
 public class Main {
@@ -7,7 +10,7 @@ public class Main {
                 .setUrl("")
                 .setCredentials("", "");
 
-        List<Project> projects = gitlab.findProjectByGroupName("");
+        List<Project> projects = gitlab.findProjectsByGroupName("");
 
         String location = "";
         gitlab.cloneProjects(projects, location, "");

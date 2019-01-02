@@ -1,3 +1,5 @@
+package api;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -13,7 +15,7 @@ public class Gitlab {
     private String token;
     private UsernamePasswordCredentialsProvider credentials;
 
-    Gitlab(){
+    public Gitlab(){
         api = "/api/v4";
     }
 
@@ -54,12 +56,13 @@ public class Gitlab {
         return RestConnection.getObject(request, token, Group.class);
     }
 
-    public List<Project> findProjectByGroupName(String groupName) {
+    public List<Project> findProjectsByGroupName(String groupName) {
         Group group = findGroupByName(groupName);
-        return findProjectByGroupId(group.getId());
+        return findProjectsByGroupId(group.getId());
     }
 
-    public List<Project> findProjectByGroupId(int groupId){
+    //TODO: if number of projects exceeds 100, I will have a problem. Build a function that will check for all pages
+    public List<Project> findProjectsByGroupId(int groupId){
         String request = url + api + "/groups/" + groupId + "/projects?per_page=100";
         return RestConnection.getObjectList(request, token, Project.class);
     }
