@@ -18,7 +18,7 @@ public class Gitlab {
     private UsernamePasswordCredentialsProvider credentials;
 
     public Gitlab(){
-        api = "/org/gitlabloader/api/v4";
+        api = "/api/v4";
     }
 
     public Gitlab setUrl(String url) {
