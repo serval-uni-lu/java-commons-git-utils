@@ -1,4 +1,3 @@
-import org.apache.commons.io.FileUtils;
 import org.gitlabloader.api.Gitlab;
 import org.gitlabloader.api.Project;
 
@@ -8,8 +7,7 @@ public class Main {
     public static void main(String[] args){
         Gitlab gitlab = new Gitlab()
                 .setToken("")
-                .setUrl("")
-                .setCredentials("", "");
+                .setUrl("");
 
         List<Project> projects = gitlab.findProjectsByGroupName("");
 
