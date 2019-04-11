@@ -28,7 +28,7 @@ public class Gitlab {
 
     public Gitlab setToken(String token) {
         this.token = token;
-        this.credentials = new UsernamePasswordCredentialsProvider(this.token, "");
+        this.credentials = new UsernamePasswordCredentialsProvider("PRIVATE-TOKEN", this.token);
         return this;
     }
 
