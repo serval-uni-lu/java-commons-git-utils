@@ -7,8 +7,7 @@ public class Main {
     public static void main(String[] args){
         Gitlab gitlab = new Gitlab()
                 .setToken("")
-                .setUrl("")
-                .setCredentials("", "");
+                .setUrl("");
 
         List<Project> projects = gitlab.findProjectsByGroupName("");
 

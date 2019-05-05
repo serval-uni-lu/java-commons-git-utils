@@ -28,13 +28,10 @@ public class Gitlab {
 
     public Gitlab setToken(String token) {
         this.token = token;
+        this.credentials = new UsernamePasswordCredentialsProvider("PRIVATE-TOKEN", this.token);
         return this;
     }
 
-    public Gitlab setCredentials(String username, String password) {
-        credentials = new UsernamePasswordCredentialsProvider(username, password);
-        return this;
-    }
 
     public List<Group> getGroups() {
         String request = url + api + "/groups";
