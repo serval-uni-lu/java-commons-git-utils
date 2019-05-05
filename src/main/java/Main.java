@@ -1,6 +1,5 @@
-import org.apache.commons.io.FileUtils;
-import org.gitlabloader.api.Gitlab;
-import org.gitlabloader.api.Project;
+import org.ukwikora.gitlabloader.Gitlab;
+import org.ukwikora.gitlabloader.Project;
 
 import java.util.List;
 
