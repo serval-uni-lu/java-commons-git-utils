@@ -50,6 +50,7 @@ public class Project {
     private int approvals_before_merge;
     private boolean mirror;
     private boolean merge_requests_enabled;
+    private String external_authorization_classification_label;
 
     @JsonGetter("id")
     public int getId() {
@@ -467,5 +468,15 @@ public class Project {
     @JsonSetter("merge_requests_enabled")
     public void setMergeRequestsEnabled(boolean merge_requests_enabled) {
         this.merge_requests_enabled = merge_requests_enabled;
+    }
+
+    @JsonGetter("getExternal_authorization_classification_label")
+    public String getExternalAuthorizationClassificationLabel() {
+        return external_authorization_classification_label;
+    }
+
+    @JsonSetter("getExternal_authorization_classification_label")
+    public void setExternalAuthorizationClassificationLabel(String label) {
+        this.external_authorization_classification_label = label;
     }
 }
