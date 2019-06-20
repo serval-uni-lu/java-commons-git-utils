@@ -20,59 +20,34 @@ public class RestConnection {
         mapper = new ObjectMapper();
     }
 
-    static public String getRequest(String request, String token) {
+    static public String getRequest(String request, String token) throws IOException {
         HttpGet get = new HttpGet(request);
         get.addHeader("PRIVATE-TOKEN", token);
         HttpResponse response;
+        response = client.execute(get);
 
-        String json;
-
-        try{
-            response = client.execute(get);
-            json = EntityUtils.toString(response.getEntity());
-
-        } catch (IOException e) {
-            json = "";
-        }
-
-        return json;
+        return EntityUtils.toString(response.getEntity());
     }
 
-    static public <T> T getObject(String request, String token, Class<T> type) {
+    static public <T> T getObject(String request, String token, Class<T> type) throws IOException {
         String json = RestConnection.getRequest(request, token);
 
         if(json.isEmpty()) {
-            return null;
+            throw  new IOException(String.format("Request %s with token %s returned an empty response", request, token));
         }
 
-        T object;
-
-        try {
-            JavaType javaType = mapper.getTypeFactory().constructType(type);
-            object = mapper.readValue(json, javaType);
-        } catch (IOException e) {
-            object = null;
-        }
-
-        return object;
+        JavaType javaType = mapper.getTypeFactory().constructType(type);
+        return mapper.readValue(json, javaType);
     }
 
-    static public <T> List<T> getObjectList(String request, String token, Class<T> type) {
+    static public <T> List<T> getObjectList(String request, String token, Class<T> type) throws IOException {
         String json = RestConnection.getRequest(request, token);
 
         if(json.isEmpty()) {
-            return null;
+            throw  new IOException(String.format("Request %s with token %s returned an empty response", request, token));
         }
 
-        List<T> objects;
-
-        try {
-            JavaType javaType = mapper.getTypeFactory().constructCollectionType(List.class, type);
-            objects = mapper.readValue(json, javaType);
-        } catch (IOException e) {
-            objects = null;
-        }
-
-        return objects;
+        JavaType javaType = mapper.getTypeFactory().constructCollectionType(List.class, type);
+        return mapper.readValue(json, javaType);
     }
 }

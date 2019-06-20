@@ -33,12 +33,12 @@ public class Gitlab {
     }
 
 
-    public List<Group> getGroups() {
+    public List<Group> getGroups() throws IOException {
         String request = url + api + "/groups";
         return RestConnection.getObjectList(request, token, Group.class);
     }
 
-    public Group findGroupByName(String name) {
+    public Group findGroupByName(String name) throws IOException {
         List<Group> groups = getGroups();
 
         for(Group group: groups) {
@@ -50,18 +50,18 @@ public class Gitlab {
         return null;
     }
 
-    public Group findGroupById(int id){
+    public Group findGroupById(int id) throws IOException {
         String request = url + api + "/groups/" + id;
         return RestConnection.getObject(request, token, Group.class);
     }
 
-    public List<Project> findProjectsByGroupName(String groupName) {
+    public List<Project> findProjectsByGroupName(String groupName) throws IOException {
         Group group = findGroupByName(groupName);
         return findProjectsByGroupId(group.getId());
     }
 
     //TODO: if number of projects exceeds 100, I will have a problem. Build a function that will check for all pages
-    public List<Project> findProjectsByGroupId(int groupId){
+    public List<Project> findProjectsByGroupId(int groupId) throws IOException {
         String request = url + api + "/groups/" + groupId + "/projects?per_page=100";
         return RestConnection.getObjectList(request, token, Project.class);
     }

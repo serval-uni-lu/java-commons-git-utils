@@ -1,6 +1,7 @@
 import org.ukwikora.gitlabloader.Gitlab;
 import org.ukwikora.gitlabloader.Project;
 
+import java.io.IOException;
 import java.util.List;
 
 public class Main {
@@ -9,7 +10,12 @@ public class Main {
                 .setToken("")
                 .setUrl("");
 
-        List<Project> projects = gitlab.findProjectsByGroupName("");
+        List<Project> projects = null;
+        try {
+            projects = gitlab.findProjectsByGroupName("");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String location = "";
         gitlab.cloneProjects(projects, location, "");
