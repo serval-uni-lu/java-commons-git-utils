@@ -470,12 +470,12 @@ public class Project {
         this.merge_requests_enabled = merge_requests_enabled;
     }
 
-    @JsonGetter("getExternal_authorization_classification_label")
+    @JsonGetter("external_authorization_classification_label")
     public String getExternalAuthorizationClassificationLabel() {
         return external_authorization_classification_label;
     }
 
-    @JsonSetter("getExternal_authorization_classification_label")
+    @JsonSetter("external_authorization_classification_label")
     public void setExternalAuthorizationClassificationLabel(String label) {
         this.external_authorization_classification_label = label;
     }
