@@ -26,6 +26,7 @@ public class Project {
     private String last_activity_at;
     private Map<String, String> namespace;
     private Map<String, String> _links;
+    private boolean empty_repo;
     private boolean archived;
     private String visibility;
     private boolean resolve_outdated_diff_discussions;
@@ -39,6 +40,7 @@ public class Project {
     private int creator_id;
     private String import_status;
     private int open_issues_count;
+    private int ci_default_git_depth;
     private boolean public_jobs;
     private String ci_config_path;
     private List<String> shared_with_groups;
@@ -215,6 +217,16 @@ public class Project {
         this.last_activity_at = last_activity_at;
     }
 
+    @JsonGetter("empty_repo")
+    public boolean isEmptyRepo() {
+        return empty_repo;
+    }
+
+    @JsonSetter("empty_repo")
+    public void setEmptyRepo(boolean empty_repo) {
+        this.empty_repo = empty_repo;
+    }
+
     @JsonGetter("archived")
     public boolean isArchived() {
         return archived;
@@ -340,6 +352,16 @@ public class Project {
     @JsonSetter("open_issues_count")
     public void setOpenIssuesCount(int open_issues_count) {
         this.open_issues_count = open_issues_count;
+    }
+
+    @JsonGetter("ci_default_git_depth")
+    public int getCiDefaultGitDepth() {
+        return ci_default_git_depth;
+    }
+
+    @JsonSetter("ci_default_git_depth")
+    public void setCiDefaultGitDepth(int ci_default_git_depth) {
+        this.ci_default_git_depth = ci_default_git_depth;
     }
 
     @JsonGetter("public_jobs")
