@@ -38,6 +38,7 @@ public class Project {
     private String builds_access_level;
     private String wiki_access_level;
     private String snippets_access_level;
+    private int build_timeout;
     private boolean wiki_enabled;
     private boolean jobs_enabled;
     private boolean snippets_enabled;
@@ -409,6 +410,16 @@ public class Project {
     @JsonGetter("snippets_access_level")
     public String getSnippetsAccessLevel() {
         return snippets_access_level;
+    }
+
+    @JsonSetter("build_timeout")
+    public void setBuildTimeout(int buildTimeout){
+        this.build_timeout = buildTimeout;
+    }
+
+    @JsonGetter("build_timeout")
+    public int getBuildTimeout() {
+        return build_timeout;
     }
 
     @JsonGetter("open_issues_count")
