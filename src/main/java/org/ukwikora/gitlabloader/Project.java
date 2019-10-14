@@ -32,6 +32,7 @@ public class Project {
     private boolean resolve_outdated_diff_discussions;
     private boolean container_registry_enabled;
     private boolean issues_enabled;
+    private String issues_access_level;
     private boolean wiki_enabled;
     private boolean jobs_enabled;
     private boolean snippets_enabled;
@@ -340,8 +341,19 @@ public class Project {
         return import_status;
     }
 
-    public void setImport_status(String import_status) {
+    @JsonSetter("import_status")
+    public void setImportStatus(String import_status) {
         this.import_status = import_status;
+    }
+
+    @JsonSetter("issues_access_level")
+    public void setIssuesAccessLevel(String issuesAccessLevel){
+        this.issues_access_level = issuesAccessLevel;
+    }
+
+    @JsonGetter("issues_access_level")
+    public String getIssuesAccessLevel() {
+        return issues_access_level;
     }
 
     @JsonGetter("open_issues_count")
