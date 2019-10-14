@@ -39,6 +39,7 @@ public class Project {
     private String wiki_access_level;
     private String snippets_access_level;
     private int build_timeout;
+    private String build_coverage_regex;
     private boolean wiki_enabled;
     private boolean jobs_enabled;
     private boolean snippets_enabled;
@@ -421,6 +422,16 @@ public class Project {
     @JsonGetter("build_timeout")
     public int getBuildTimeout() {
         return build_timeout;
+    }
+
+    @JsonSetter("build_coverage_regex")
+    public void setBuildCoverageRegex(String buildCoverageRegex){
+        this.build_coverage_regex = buildCoverageRegex;
+    }
+
+    @JsonGetter("build_coverage_regex")
+    public String getBuildCoverageRegex() {
+        return build_coverage_regex;
     }
 
     @JsonGetter("open_issues_count")
