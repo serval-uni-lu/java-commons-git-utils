@@ -60,6 +60,7 @@ public class Project {
     private boolean mirror;
     private boolean merge_requests_enabled;
     private String external_authorization_classification_label;
+    private String auto_cancel_pending_pipelines;
 
     @JsonGetter("id")
     public int getId() {
@@ -578,5 +579,15 @@ public class Project {
     @JsonSetter("external_authorization_classification_label")
     public void setExternalAuthorizationClassificationLabel(String label) {
         this.external_authorization_classification_label = label;
+    }
+
+    @JsonGetter("auto_cancel_pending_pipelines")
+    public String getAutoCancelPendingPipelines() {
+        return auto_cancel_pending_pipelines;
+    }
+
+    @JsonSetter("auto_cancel_pending_pipelines")
+    public void setAutoCancelPendingPipelines(String autoCancelPendingPipelines) {
+        this.auto_cancel_pending_pipelines = autoCancelPendingPipelines;
     }
 }
