@@ -63,6 +63,7 @@ public class Project {
     private String external_authorization_classification_label;
     private String auto_cancel_pending_pipelines;
     private boolean auto_devops_enabled;
+    private String auto_devops_deploy_strategy;
 
     @JsonGetter("id")
     public int getId() {
@@ -611,5 +612,15 @@ public class Project {
     @JsonSetter("auto_devops_enabled")
     public void setAutoDevopsEnabled(boolean autoDevopsEnabled){
         this.auto_devops_enabled = autoDevopsEnabled;
+    }
+
+    @JsonGetter("auto_devops_deploy_strategy")
+    public String getAutoDevopsDeployStrategy(){
+        return auto_devops_deploy_strategy;
+    }
+
+    @JsonSetter("auto_devops_deploy_strategy")
+    public void setAutoDevopsDeployStrategy(String autoDevopsDeployStrategy){
+        this.auto_devops_deploy_strategy = autoDevopsDeployStrategy;
     }
 }
