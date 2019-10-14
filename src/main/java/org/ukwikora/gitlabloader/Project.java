@@ -33,6 +33,11 @@ public class Project {
     private boolean container_registry_enabled;
     private boolean issues_enabled;
     private String issues_access_level;
+    private String repository_access_level;
+    private String merge_requests_access_level;
+    private String builds_access_level;
+    private String wiki_access_level;
+    private String snippets_access_level;
     private boolean wiki_enabled;
     private boolean jobs_enabled;
     private boolean snippets_enabled;
@@ -354,6 +359,56 @@ public class Project {
     @JsonGetter("issues_access_level")
     public String getIssuesAccessLevel() {
         return issues_access_level;
+    }
+
+    @JsonSetter("repository_access_level")
+    public void setRepositoryAccessLevel(String repositoryAccessLevel){
+        this.repository_access_level = repositoryAccessLevel;
+    }
+
+    @JsonGetter("repository_access_level")
+    public String getRepositoryAccessLevel() {
+        return repository_access_level;
+    }
+
+    @JsonSetter("merge_requests_access_level")
+    public void setMergeRequestsAccessLevel(String mergeRequestsAccessLevel){
+        this.merge_requests_access_level = mergeRequestsAccessLevel;
+    }
+
+    @JsonGetter("merge_requests_access_level")
+    public String getMergeRequestsAccessLevel() {
+        return merge_requests_access_level;
+    }
+
+    @JsonSetter("builds_access_level")
+    public void setBuildsAccessLevel(String buildsAccessLevel){
+        this.builds_access_level = buildsAccessLevel;
+    }
+
+    @JsonGetter("builds_access_level")
+    public String getBuildsAccessLevel() {
+        return builds_access_level;
+    }
+
+    @JsonSetter("wiki_access_level")
+    public void setWikiAccessLevel(String wikiAccessLevel){
+        this.wiki_access_level = wikiAccessLevel;
+    }
+
+    @JsonGetter("wiki_access_level")
+    public String getWikiAccessLevel() {
+        return wiki_access_level;
+    }
+
+    @JsonSetter("snippets_access_level")
+    public void setSnippetsAccessLevel(String snippetsAccessLevel){
+        this.snippets_access_level = snippetsAccessLevel;
+    }
+
+    @JsonGetter("snippets_access_level")
+    public String getSnippetsAccessLevel() {
+        return snippets_access_level;
     }
 
     @JsonGetter("open_issues_count")
