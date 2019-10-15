@@ -1,4 +1,4 @@
-package org.ukwikora.gitlabloader;
+package org.ukwikora.gitloader.gitlab;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 public class RestConnection {
     private static HttpClient client;
@@ -40,14 +40,14 @@ public class RestConnection {
         return mapper.readValue(json, javaType);
     }
 
-    static public <T> List<T> getObjectList(String request, String token, Class<T> type) throws IOException {
+    static public <T> Set<T> getObjectList(String request, String token, Class<T> type) throws IOException {
         String json = RestConnection.getRequest(request, token);
 
         if(json.isEmpty()) {
             throw  new IOException(String.format("Request %s with token %s returned an empty response", request, token));
         }
 
-        JavaType javaType = mapper.getTypeFactory().constructCollectionType(List.class, type);
+        JavaType javaType = mapper.getTypeFactory().constructCollectionType(Set.class, type);
         return mapper.readValue(json, javaType);
     }
 }
