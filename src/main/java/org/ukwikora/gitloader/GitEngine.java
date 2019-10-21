@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class GitEngine {
-    private Set<String> urls;
+    private String url;
     private String token;
     private String cloneFolder;
     private String defaultBranch;
@@ -21,8 +21,8 @@ public abstract class GitEngine {
         this.branches = new HashMap<>();
     }
 
-    public GitEngine setUrls(Set<String> urls){
-        this.urls = urls;
+    public GitEngine setUrl(String url){
+        this.url = url;
         return this;
     }
 
@@ -46,8 +46,8 @@ public abstract class GitEngine {
         return this;
     }
 
-    public Set<String> getUrls() {
-        return urls;
+    public String getUrl() {
+        return url;
     }
 
     public String getToken() {
@@ -66,6 +66,7 @@ public abstract class GitEngine {
         return branches.getOrDefault(project, defaultBranch);
     }
 
-    abstract public Set<File> cloneProjects(Set<String> projectNames) throws GitAPIException, IOException;
+    abstract public Set<File> cloneProjectsFromNames(Set<String> names) throws GitAPIException, IOException;
     abstract public Set<File> cloneProjectsFromGroup(String group) throws IOException, GitAPIException;
+    abstract public Set<File> cloneProjectsFromUser(String user) throws IOException, GitAPIException;
 }

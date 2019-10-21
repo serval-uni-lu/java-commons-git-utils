@@ -5,6 +5,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.apache.commons.io.FileUtils;
 import org.ukwikora.gitloader.GitEngine;
+import org.ukwikora.gitloader.call.RestConnection;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +14,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Gitlab extends GitEngine {
-    private String api;
+    private final String api;
 
     public Gitlab(){
         api = "/api/v4";
     }
 
     @Override
-    public Set<File> cloneProjects(Set<String> projectNames) throws GitAPIException, IOException {
-        final Set<Project> projects = findProjectByNames(projectNames);
+    public Set<File> cloneProjectsFromNames(Set<String> projectNames) throws GitAPIException, IOException {
+        final Set<Project> projects = findProjectsByNames(projectNames);
         return cloneAllProjects(projects);
     }
 
@@ -31,15 +32,10 @@ public class Gitlab extends GitEngine {
         return cloneAllProjects(projects);
     }
 
-    private Set<Project> findProjectByNames(Set<String> projectNames) throws IOException {
-        final Set<Project> projects = getProjects();
-
-        projects.removeIf(project -> {
-            String name = project.getName();
-            return !projectNames.contains(name);
-        });
-
-        return projects;
+    @Override
+    public Set<File> cloneProjectsFromUser(String user) throws IOException, GitAPIException {
+        final Set<Project> projects = findProjectsByUserName(user);
+        return cloneAllProjects(projects);
     }
 
     private Set<Project> findProjectsByGroupName(String groupName) throws IOException {
@@ -52,12 +48,26 @@ public class Gitlab extends GitEngine {
         return findProjectsByGroupId(group.getId());
     }
 
+    private Set<Project> findProjectsByUserName(String userName) throws IOException {
+        User user = findUserByName(userName);
+
+        if(user == null){
+            return Collections.emptySet();
+        }
+
+        return findProjectsByUserId(user.getId());
+    }
+
     //TODO: if number of projects exceeds 100, I will have a problem. Build a function that will check for all pages
     private Set<Project> findProjectsByGroupId(int groupId) throws IOException {
-        final String request = getSingleUrl() + api + "/groups/" + groupId + "/projects?per_page=100";
+        final String request = getUrl() + api + "/groups/" + groupId + "/projects?per_page=100";
         return RestConnection.getObjectList(request, getToken(), Project.class);
     }
 
+    private Set<Project> findProjectsByUserId(int userId) throws IOException {
+        final String request = getUrl() + api + "/users/" + userId + "/projects";
+        return RestConnection.getObjectList(request, getToken(), Project.class);
+    }
     private Set<File> cloneAllProjects(Set<Project> projects) throws GitAPIException, IOException {
         File parent = new File(getCloneFolder());
 
@@ -94,34 +104,54 @@ public class Gitlab extends GitEngine {
                 .call();
     }
 
-    private String getSingleUrl() throws IOException {
-        if(getUrls().size() != 1){
-            throw new IOException(String.format("Expected a single url, got %s instead",
-                    getUrls().size()));
+    private Set<Project> findProjectsByNames(Set<String> names) throws IOException {
+        Set<Project> projects = new HashSet<>(names.size());
+
+        for(String name: names){
+            final String request = String.format("%s%s/projects?custom_attributes[path_with_namespace]=%s",
+                    getUrl(),
+                    api,
+                    name);
+
+            final Set<Project> project = RestConnection.getObjectList(request, getToken(), Project.class);
+
+            if(project.size() != 1){
+                continue;
+            }
+
+            projects.add(project.iterator().next());
         }
 
-        return getUrls().iterator().next();
-    }
-
-    private Set<Group> getGroups() throws IOException {
-        final String request = getSingleUrl() + api + "/groups";
-        return RestConnection.getObjectList(request, getToken(), Group.class);
-    }
-
-    private Set<Project> getProjects() throws IOException {
-        String request = getSingleUrl() + api + "/projects";
-        return RestConnection.getObjectList(request, getToken(), Project.class);
+        return projects;
     }
 
     private Group findGroupByName(String name) throws IOException {
-        final Set<Group> groups = getGroups();
+        final String request = String.format("%s%s/groups?custom_attributes[name]=%s",
+                getUrl(),
+                api,
+                name);
 
-        for(Group group: groups) {
-            if(group.getName().equals(name)){
-                return group;
-            }
+        final Set<Group> groups = RestConnection.getObjectList(request, getToken(), Group.class);
+
+        if(groups.size() != 1){
+            return null;
         }
 
-        return null;
+        return groups.iterator().next();
+    }
+
+    private User findUserByName(String userName) throws IOException {
+        final String request = String.format("%s%s/users?username=%s",
+                getUrl(),
+                api,
+                userName);
+
+        final Set<User> users = RestConnection.getObjectList(request, getToken(), User.class);
+
+        if(users.size() != 1){
+            return null;
+        }
+
+        return users.iterator().next();
     }
 }

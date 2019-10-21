@@ -6,16 +6,24 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 public class Group {
     private int id;
     private String name;
-    private String web_url;
     private String path;
     private String description;
     private String visibility;
+    private boolean share_with_group_lock;
+    private boolean require_two_factor_authentication;
+    private int two_factor_grace_period;
+    private String project_creation_level;
+    private String auto_devops_enabled;
+    private String subgroup_creation_level;
+    private String emails_disabled;
     private boolean lfs_enabled;
     private String avatar_url;
+    private String web_url;
     private boolean request_access_enabled;
     private String full_name;
     private String full_path;
     private int parent_id;
+
     private String ldap_cn;
     private String ldap_access;
 
@@ -67,6 +75,76 @@ public class Group {
     @JsonSetter("description")
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @JsonGetter("share_with_group_lock")
+    public boolean isShareWithGroupLock(){
+        return this.share_with_group_lock;
+    }
+
+    @JsonSetter("share_with_group_lock")
+    public void setShareWithGroupLock(boolean share_with_group_lock){
+        this.share_with_group_lock = share_with_group_lock;
+    }
+
+    @JsonGetter("require_two_factor_authentication")
+    public boolean isRequireTwoFactorAuthentication(){
+        return this.require_two_factor_authentication;
+    }
+
+    @JsonSetter("require_two_factor_authentication")
+    public void setRequireTwoFactorAuthentication(boolean require_two_factor_authentication){
+        this.require_two_factor_authentication = require_two_factor_authentication;
+    }
+
+    @JsonGetter("two_factor_grace_period")
+    public int getTwoFactorGracePeriod(){
+        return this.two_factor_grace_period;
+    }
+
+    @JsonSetter("two_factor_grace_period")
+    public void setTwoFactorGracePeriod(int two_factor_grace_period){
+        this.two_factor_grace_period = two_factor_grace_period;
+    }
+
+    @JsonGetter("project_creation_level")
+    public String getProjectCreationLevel(){
+        return this.project_creation_level;
+    }
+
+    @JsonSetter("project_creation_level")
+    public void setProjectCreationLevel(String project_creation_level){
+        this.project_creation_level = project_creation_level;
+    }
+
+    @JsonGetter("auto_devops_enabled")
+    public String getAutoDevopsEnabled(){
+        return this.auto_devops_enabled;
+    }
+
+    @JsonSetter("auto_devops_enabled")
+    public void setAutoDevopsEnabled(String auto_devops_enabled){
+        this.auto_devops_enabled = auto_devops_enabled;
+    }
+
+    @JsonGetter("subgroup_creation_level")
+    public String getSubgroupCreationLevel(){
+        return this.subgroup_creation_level;
+    }
+
+    @JsonSetter("subgroup_creation_level")
+    public void setSubgroupCreationLevel(String subgroup_creation_level){
+        this.subgroup_creation_level = subgroup_creation_level;
+    }
+
+    @JsonGetter("emails_disabled")
+    public String getEmailsDisabled(){
+        return this.emails_disabled;
+    }
+
+    @JsonSetter("emails_disabled")
+    public void setEmailsDisabled(String emails_disabled){
+        this.emails_disabled = emails_disabled;
     }
 
     @JsonGetter("visibility")

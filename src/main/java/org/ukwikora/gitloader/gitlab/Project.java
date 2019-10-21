@@ -1,11 +1,13 @@
 package org.ukwikora.gitloader.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties({"forked_from_project"})
 public class Project {
     private int id;
     private String description;
@@ -29,20 +31,20 @@ public class Project {
     private boolean empty_repo;
     private boolean archived;
     private String visibility;
+    private Owner owner;
     private boolean resolve_outdated_diff_discussions;
     private boolean container_registry_enabled;
     private boolean issues_enabled;
-    private String issues_access_level;
-    private String repository_access_level;
-    private String merge_requests_access_level;
-    private String builds_access_level;
-    private String wiki_access_level;
-    private String snippets_access_level;
-    private int build_timeout;
-    private String build_coverage_regex;
+    private boolean merge_requests_enabled;
     private boolean wiki_enabled;
     private boolean jobs_enabled;
     private boolean snippets_enabled;
+    private String issues_access_level;
+    private String repository_access_level;
+    private String merge_requests_access_level;
+    private String wiki_access_level;
+    private String builds_access_level;
+    private String snippets_access_level;
     private boolean shared_runners_enabled;
     private boolean lfs_enabled;
     private int creator_id;
@@ -50,6 +52,9 @@ public class Project {
     private int open_issues_count;
     private int ci_default_git_depth;
     private boolean public_jobs;
+    private int build_timeout;
+    private String auto_cancel_pending_pipelines;
+    private String build_coverage_regex;
     private String ci_config_path;
     private List<String> shared_with_groups;
     private boolean only_allow_merge_if_pipeline_succeeds;
@@ -57,13 +62,13 @@ public class Project {
     private boolean only_allow_merge_if_all_discussions_are_resolved;
     private boolean printing_merge_request_link_enabled;
     private String merge_method;
-    private int approvals_before_merge;
-    private boolean mirror;
-    private boolean merge_requests_enabled;
-    private String external_authorization_classification_label;
-    private String auto_cancel_pending_pipelines;
     private boolean auto_devops_enabled;
     private String auto_devops_deploy_strategy;
+    private Map<String, String> permissions;
+    private int approvals_before_merge;
+    private boolean mirror;
+    private String external_authorization_classification_label;
+    private boolean packages_enabled;
 
     @JsonGetter("id")
     public int getId() {
@@ -256,6 +261,16 @@ public class Project {
     @JsonSetter("visibility")
     public void setVisibility(String visibility) {
         this.visibility = visibility;
+    }
+
+    @JsonGetter("owner")
+    public Owner getOwner() {
+        return owner;
+    }
+
+    @JsonSetter("owner")
+    public void setOwner(Owner owner) {
+        this.owner = owner;
     }
 
     @JsonGetter("resolve_outdated_diff_discussions")
@@ -622,5 +637,25 @@ public class Project {
     @JsonSetter("auto_devops_deploy_strategy")
     public void setAutoDevopsDeployStrategy(String autoDevopsDeployStrategy){
         this.auto_devops_deploy_strategy = autoDevopsDeployStrategy;
+    }
+
+    @JsonGetter("permissions")
+    public Map<String, String> getPermissions(){
+        return permissions;
+    }
+
+    @JsonSetter("permissions")
+    public void setPermissions(Map<String, String> permissions){
+        this.permissions = permissions;
+    }
+
+    @JsonGetter("packages_enabled")
+    public boolean isPackagesEnabled(){
+        return packages_enabled;
+    }
+
+    @JsonSetter("packages_enabled")
+    public void setPackagesEnabled(boolean package_enabled){
+        this.packages_enabled = package_enabled;
     }
 }
