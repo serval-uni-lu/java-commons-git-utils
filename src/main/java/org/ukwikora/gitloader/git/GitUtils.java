@@ -24,7 +24,7 @@ public class GitUtils {
 
             final String commitId = commit.getName();
             final Date date = commit.getAuthorIdent().getWhen();
-            final File location = repository.getDirectory();
+            final File location = repository.getDirectory().getParentFile();
             final String remote = repository.getConfig().getString("remote", "origin", "url");
 
             localRepo = new LocalRepo(location, commitId, date, remote);
