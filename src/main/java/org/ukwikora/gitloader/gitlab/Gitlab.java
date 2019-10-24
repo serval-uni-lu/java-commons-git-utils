@@ -1,17 +1,14 @@
 package org.ukwikora.gitloader.gitlab;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.apache.commons.io.FileUtils;
 import org.ukwikora.gitloader.GitEngine;
+import org.ukwikora.gitloader.git.GitUtils;
+import org.ukwikora.gitloader.git.LocalRepo;
 import org.ukwikora.gitloader.call.RestConnection;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Gitlab extends GitEngine {
     private final String api;
@@ -21,19 +18,19 @@ public class Gitlab extends GitEngine {
     }
 
     @Override
-    public Set<File> cloneProjectsFromNames(Set<String> projectNames) throws GitAPIException, IOException {
+    public Set<LocalRepo> cloneProjectsFromNames(Set<String> projectNames) throws GitAPIException, IOException {
         final Set<Project> projects = findProjectsByNames(projectNames);
         return cloneAllProjects(projects);
     }
 
     @Override
-    public Set<File> cloneProjectsFromGroup(String group) throws IOException, GitAPIException {
+    public Set<LocalRepo> cloneProjectsFromGroup(String group) throws IOException, GitAPIException {
         final Set<Project> projects = findProjectsByGroupName(group);
         return cloneAllProjects(projects);
     }
 
     @Override
-    public Set<File> cloneProjectsFromUser(String user) throws IOException, GitAPIException {
+    public Set<LocalRepo> cloneProjectsFromUser(String user) throws IOException, GitAPIException {
         final Set<Project> projects = findProjectsByUserName(user);
         return cloneAllProjects(projects);
     }
@@ -68,40 +65,25 @@ public class Gitlab extends GitEngine {
         final String request = getUrl() + api + "/users/" + userId + "/projects";
         return RestConnection.getObjectList(request, getToken(), Project.class);
     }
-    private Set<File> cloneAllProjects(Set<Project> projects) throws GitAPIException, IOException {
+    private Set<LocalRepo> cloneAllProjects(Set<Project> projects) throws GitAPIException, IOException {
         File parent = new File(getCloneFolder());
 
         if(!parent.isDirectory()){
             return Collections.emptySet();
         }
 
-        Set<File> locations = new HashSet<>();
+        Set<LocalRepo> localRepos = new HashSet<>();
 
         for(Project project: projects) {
-            File destination = new File(parent, project.getName());
-            locations.add(destination);
+            final File destination = new File(parent, project.getName());
+            final String branch = getBranchForProject(project.getName());
+            final String url = project.getHttpUrlToRepo();
 
-            String branch = getBranchForProject(project.getName());
-            cloneRepository(project.getHttpUrlToRepo(), destination, branch);
+            final LocalRepo localRepo = GitUtils.loadCurrentRepository(url, getToken(), destination, branch);
+            localRepos.add(localRepo);
         }
 
-        return locations;
-    }
-
-    private void cloneRepository(String url, File localFolder, String branch) throws GitAPIException, IOException {
-        if(localFolder.exists()){
-            FileUtils.deleteDirectory(localFolder);
-        }
-
-        UsernamePasswordCredentialsProvider credentials =
-                new UsernamePasswordCredentialsProvider("PRIVATE-TOKEN", getToken());
-
-        Git.cloneRepository()
-                .setURI(url)
-                .setCredentialsProvider(credentials)
-                .setBranch(branch)
-                .setDirectory(localFolder)
-                .call();
+        return localRepos;
     }
 
     private Set<Project> findProjectsByNames(Set<String> names) throws IOException {

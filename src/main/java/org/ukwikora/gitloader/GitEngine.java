@@ -1,8 +1,8 @@
 package org.ukwikora.gitloader;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.ukwikora.gitloader.git.LocalRepo;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +66,7 @@ public abstract class GitEngine {
         return branches.getOrDefault(project, defaultBranch);
     }
 
-    abstract public Set<File> cloneProjectsFromNames(Set<String> names) throws GitAPIException, IOException;
-    abstract public Set<File> cloneProjectsFromGroup(String group) throws IOException, GitAPIException;
-    abstract public Set<File> cloneProjectsFromUser(String user) throws IOException, GitAPIException;
+    abstract public Set<LocalRepo> cloneProjectsFromNames(Set<String> names) throws GitAPIException, IOException;
+    abstract public Set<LocalRepo> cloneProjectsFromGroup(String group) throws IOException, GitAPIException;
+    abstract public Set<LocalRepo> cloneProjectsFromUser(String user) throws IOException, GitAPIException;
 }

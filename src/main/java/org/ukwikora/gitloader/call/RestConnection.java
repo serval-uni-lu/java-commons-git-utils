@@ -12,19 +12,20 @@ import java.io.IOException;
 import java.util.Set;
 
 public class RestConnection {
-    private static HttpClient client;
+
     private static ObjectMapper mapper;
 
     static {
-        client = HttpClientBuilder.create().build();
+
         mapper = new ObjectMapper();
     }
 
     static public String getRequest(String request, String token) throws IOException {
-        HttpGet get = new HttpGet(request);
+        final HttpClient client = HttpClientBuilder.create().build();
+        final HttpGet get = new HttpGet(request);
+
         get.addHeader("PRIVATE-TOKEN", token);
-        HttpResponse response;
-        response = client.execute(get);
+        final HttpResponse response = client.execute(get);
 
         return EntityUtils.toString(response.getEntity());
     }
