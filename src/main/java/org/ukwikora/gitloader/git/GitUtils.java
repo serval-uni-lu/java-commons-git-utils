@@ -3,6 +3,7 @@ package org.ukwikora.gitloader.git;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -15,11 +16,18 @@ import java.io.IOException;
 import java.util.Date;
 
 public class GitUtils {
-    public static LocalRepo createLocalRepo(Repository repository) throws IOException {
+    public static LocalRepo createLocalRepo(Repository repository) throws GitAPIException, IOException {
         LocalRepo localRepo;
 
         try (RevWalk revWalk = new RevWalk(repository)) {
             final ObjectId head = repository.resolve(Constants.HEAD);
+
+            if(head == null){
+                throw new RefNotFoundException(String.format("No branch '%s' for project '%s'",
+                        repository.getBranch(),
+                        repository.getDirectory()));
+            }
+
             final RevCommit commit = revWalk.parseCommit(head);
 
             final String commitId = commit.getName();
