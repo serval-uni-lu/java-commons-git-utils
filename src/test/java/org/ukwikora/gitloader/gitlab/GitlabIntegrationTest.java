@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GitlabIntegrationTest {
     Gitlab createEngine(){
         Gitlab gitlab = new Gitlab();
-        gitlab.setToken("dKTAjFUvrnquVchDbk3p");
+        gitlab.setToken("oTh9EGjp7UJTBew-aiMg");
         gitlab.setUrl("https://gitlab.com");
 
         return gitlab;

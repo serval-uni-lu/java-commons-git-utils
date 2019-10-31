@@ -60,7 +60,6 @@ public class GitUtils {
                 .call()) {
 
             localRepo = GitUtils.createLocalRepo(git.getRepository());
-            git.getRepository().close();
         }
 
         return localRepo;

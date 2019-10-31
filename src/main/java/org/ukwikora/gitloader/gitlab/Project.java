@@ -60,6 +60,7 @@ public class Project {
     private boolean only_allow_merge_if_pipeline_succeeds;
     private boolean request_access_enabled;
     private boolean only_allow_merge_if_all_discussions_are_resolved;
+    private boolean remove_source_branch_after_merge;
     private boolean printing_merge_request_link_enabled;
     private String merge_method;
     private boolean auto_devops_enabled;
@@ -67,6 +68,10 @@ public class Project {
     private Map<String, String> permissions;
     private int approvals_before_merge;
     private boolean mirror;
+    private int mirror_user_id;
+    private boolean mirror_trigger_builds;
+    private boolean only_mirror_protected_branches;
+    private boolean mirror_overwrites_diverged_branches;
     private String external_authorization_classification_label;
     private boolean packages_enabled;
 
@@ -525,8 +530,19 @@ public class Project {
         return only_allow_merge_if_all_discussions_are_resolved;
     }
 
-    public void setOnly_allow_merge_if_all_discussions_are_resolved(boolean only_allow_merge_if_all_discussions_are_resolved) {
+    @JsonSetter("only_allow_merge_if_all_discussions_are_resolved")
+    public void setOnlyAllowMergeIfAllDiscussionsAreResolved(boolean only_allow_merge_if_all_discussions_are_resolved) {
         this.only_allow_merge_if_all_discussions_are_resolved = only_allow_merge_if_all_discussions_are_resolved;
+    }
+
+    @JsonGetter("remove_source_branch_after_merge")
+    public boolean isRemoveSourceBranchAfterMerge(){
+        return remove_source_branch_after_merge;
+    }
+
+    @JsonSetter("remove_source_branch_after_merge")
+    public void setRemoveSourceBranchAfterMerge(boolean remove_source_branch_after_merge){
+        this.remove_source_branch_after_merge = remove_source_branch_after_merge;
     }
 
     @JsonGetter("printing_merge_request_link_enabled")
@@ -567,6 +583,46 @@ public class Project {
     @JsonSetter("mirror")
     public void setMirror(boolean mirror) {
         this.mirror = mirror;
+    }
+
+    @JsonGetter("mirror_user_id")
+    public int getMirrorUserId(){
+        return mirror_user_id;
+    }
+
+    @JsonSetter("mirror_user_id")
+    public void setMirrorUserId(int mirror_user_id){
+        this.mirror_user_id = mirror_user_id;
+    }
+
+    @JsonGetter("mirror_trigger_builds")
+    public boolean getMirrorTriggerBuilds(){
+        return mirror_trigger_builds;
+    }
+
+    @JsonSetter("mirror_trigger_builds")
+    public void setMirrorTriggerBuilds(boolean mirror_trigger_builds){
+        this.mirror_trigger_builds = mirror_trigger_builds;
+    }
+
+    @JsonGetter("only_mirror_protected_branches")
+    public boolean getOnlyMirrorProtectedBranches(){
+        return only_mirror_protected_branches;
+    }
+
+    @JsonSetter("only_mirror_protected_branches")
+    public void setOnlyMirrorProtectedBranches(boolean only_mirror_protected_branches){
+        this.only_mirror_protected_branches = only_mirror_protected_branches;
+    }
+
+    @JsonGetter("mirror_overwrites_diverged_branches")
+    public boolean getMirrorOverwritesDivergedBranches(){
+        return mirror_overwrites_diverged_branches;
+    }
+
+    @JsonSetter("mirror_overwrites_diverged_branches")
+    public void setMirrorOverwritesDivergedBranches(boolean mirror_overwrites_diverged_branches){
+        this.mirror_overwrites_diverged_branches = mirror_overwrites_diverged_branches;
     }
 
     @JsonGetter("_links")
