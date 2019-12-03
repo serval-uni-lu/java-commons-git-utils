@@ -1,6 +1,5 @@
 package org.ukwikora.gitloader.gitlab;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.Test;
 import org.ukwikora.gitloader.git.LocalRepo;
 
@@ -19,7 +18,6 @@ class GitlabIntegrationTest {
     }
 
     @Test
-    @Ignore
     void testCloningFromName(){
         try {
             Gitlab gitlab = createEngine();
@@ -35,7 +33,6 @@ class GitlabIntegrationTest {
     }
 
     @Test
-    @Ignore
     void testCloningFromUsername(){
         try{
             Gitlab gitlab = createEngine();
