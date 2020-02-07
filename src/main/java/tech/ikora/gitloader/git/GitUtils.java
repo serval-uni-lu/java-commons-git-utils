@@ -1,4 +1,4 @@
-package org.ukwikora.gitloader.git;
+package tech.ikora.gitloader.git;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;

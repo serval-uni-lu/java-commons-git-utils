@@ -1,4 +1,4 @@
-package org.ukwikora.gitloader.gitlab;
+package tech.ikora.gitloader.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.List;
 import java.util.Map;
 
-@JsonIgnoreProperties({"forked_from_project"})
+@JsonIgnoreProperties({"forked_from_project", "container_expiration_policy", "marked_for_deletion_at"})
 public class Project {
     private int id;
     private String description;
@@ -39,6 +39,9 @@ public class Project {
     private boolean wiki_enabled;
     private boolean jobs_enabled;
     private boolean snippets_enabled;
+    private boolean can_create_merge_request_in;
+    private String pages_access_level;
+    private boolean emails_disabled;
     private String issues_access_level;
     private String repository_access_level;
     private String merge_requests_access_level;
@@ -63,6 +66,8 @@ public class Project {
     private boolean remove_source_branch_after_merge;
     private boolean printing_merge_request_link_enabled;
     private String merge_method;
+    private boolean autoclose_referenced_issues;
+    private String suggestion_commit_message;
     private boolean auto_devops_enabled;
     private String auto_devops_deploy_strategy;
     private Map<String, String> permissions;
@@ -74,6 +79,8 @@ public class Project {
     private boolean mirror_overwrites_diverged_branches;
     private String external_authorization_classification_label;
     private boolean packages_enabled;
+    private boolean service_desk_enabled;
+    private String service_desk_address;
 
     @JsonGetter("id")
     public int getId() {
@@ -337,6 +344,36 @@ public class Project {
         this.snippets_enabled = snippets_enabled;
     }
 
+    @JsonGetter("can_create_merge_request_in")
+    public boolean isCanCreateMergeRequestIn() {
+        return can_create_merge_request_in;
+    }
+
+    @JsonSetter("can_create_merge_request_in")
+    public void setCanCreateMergeRequestIn(boolean can_create_merge_request_in) {
+        this.can_create_merge_request_in = can_create_merge_request_in;
+    }
+
+    @JsonGetter("pages_access_level")
+    public String getPagesAccessLevel() {
+        return pages_access_level;
+    }
+
+    @JsonSetter("pages_access_level")
+    public void setPagesAccessLevel(String pages_access_level) {
+        this.pages_access_level = pages_access_level;
+    }
+
+    @JsonGetter("emails_disabled")
+    public boolean isEmailsDisabled() {
+        return emails_disabled;
+    }
+
+    @JsonSetter("emails_disabled")
+    public void setEmailsDisabled(boolean emails_disabled) {
+        this.emails_disabled = emails_disabled;
+    }
+
     @JsonGetter("shared_runners_enabled")
     public boolean isSharedRunnersEnabled() {
         return shared_runners_enabled;
@@ -565,6 +602,26 @@ public class Project {
         this.merge_method = merge_method;
     }
 
+    @JsonGetter("autoclose_referenced_issues")
+    public boolean isAutocloseReferencedIssues() {
+        return autoclose_referenced_issues;
+    }
+
+    @JsonSetter("autoclose_referenced_issues")
+    public void setAutocloseReferencedIssues(boolean autoclose_referenced_issues) {
+        this.autoclose_referenced_issues = autoclose_referenced_issues;
+    }
+
+    @JsonGetter("suggestion_commit_message")
+    public String getSuggestionCommitMessage() {
+        return suggestion_commit_message;
+    }
+
+    @JsonSetter("suggestion_commit_message")
+    public void isSuggestionCommitMessage(String suggestion_commit_message) {
+        this.suggestion_commit_message = suggestion_commit_message;
+    }
+
     @JsonGetter("approvals_before_merge")
     public int getApprovalsBeforeMerge() {
         return approvals_before_merge;
@@ -713,5 +770,25 @@ public class Project {
     @JsonSetter("packages_enabled")
     public void setPackagesEnabled(boolean package_enabled){
         this.packages_enabled = package_enabled;
+    }
+
+    @JsonGetter("service_desk_enabled")
+    public boolean isServiceDeskEnabled(){
+        return service_desk_enabled;
+    }
+
+    @JsonSetter("service_desk_enabled")
+    public void setServiceDeskEnabled(boolean service_desk_enabled){
+        this.service_desk_enabled = service_desk_enabled;
+    }
+
+    @JsonGetter("service_desk_address")
+    public String isServiceDeskAddress(){
+        return service_desk_address;
+    }
+
+    @JsonSetter("service_desk_address")
+    public void setServiceDeskAddress(String service_desk_address){
+        this.service_desk_address = service_desk_address;
     }
 }

@@ -1,4 +1,4 @@
-package org.ukwikora.gitloader.gitlab;
+package tech.ikora.gitloader.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -16,6 +16,7 @@ public class Group {
     private String auto_devops_enabled;
     private String subgroup_creation_level;
     private String emails_disabled;
+    private String mentions_disabled;
     private boolean lfs_enabled;
     private String avatar_url;
     private String web_url;
@@ -145,6 +146,16 @@ public class Group {
     @JsonSetter("emails_disabled")
     public void setEmailsDisabled(String emails_disabled){
         this.emails_disabled = emails_disabled;
+    }
+
+    @JsonGetter("mentions_disabled")
+    public String getMentionsDisabled(){
+        return this.mentions_disabled;
+    }
+
+    @JsonSetter("mentions_disabled")
+    public void setMentionsDisabled(String mentions_disabled){
+        this.mentions_disabled = mentions_disabled;
     }
 
     @JsonGetter("visibility")

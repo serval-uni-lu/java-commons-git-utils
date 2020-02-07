@@ -1,7 +1,7 @@
-package org.ukwikora.gitloader;
+package tech.ikora.gitloader;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.ukwikora.gitloader.git.LocalRepo;
+import tech.ikora.gitloader.git.LocalRepo;
 
 import java.io.IOException;
 import java.util.HashMap;

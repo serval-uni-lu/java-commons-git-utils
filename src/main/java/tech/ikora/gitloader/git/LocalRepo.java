@@ -1,4 +1,4 @@
-package org.ukwikora.gitloader.git;
+package tech.ikora.gitloader.git;
 
 import java.io.File;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package org.ukwikora.gitloader.gitlab;
+package tech.ikora.gitloader.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

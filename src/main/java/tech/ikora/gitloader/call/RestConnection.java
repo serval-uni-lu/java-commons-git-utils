@@ -1,4 +1,4 @@
-package org.ukwikora.gitloader.call;
+package tech.ikora.gitloader.call;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

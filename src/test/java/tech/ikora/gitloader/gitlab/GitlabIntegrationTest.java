@@ -1,7 +1,7 @@
-package org.ukwikora.gitloader.gitlab;
+package tech.ikora.gitloader.gitlab;
 
 import org.junit.jupiter.api.Test;
-import org.ukwikora.gitloader.git.LocalRepo;
+import tech.ikora.gitloader.git.LocalRepo;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,12 +1,10 @@
-package org.ukwikora.gitloader.gitlab;
+package tech.ikora.gitloader.gitlab;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.ukwikora.gitloader.GitEngine;
-import org.ukwikora.gitloader.call.RestConnection;
-import org.ukwikora.gitloader.git.GitUtils;
-import org.ukwikora.gitloader.git.LocalRepo;
+import tech.ikora.gitloader.GitEngine;
+import tech.ikora.gitloader.call.RestConnection;
+import tech.ikora.gitloader.git.GitUtils;
+import tech.ikora.gitloader.git.LocalRepo;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Gitlab extends GitEngine {
-    private static final Logger logger = LogManager.getLogger(Gitlab.class);
     private final String api;
 
     public Gitlab(){
@@ -70,7 +67,7 @@ public class Gitlab extends GitEngine {
         final String request = getUrl() + api + "/users/" + userId + "/projects";
         return RestConnection.getObjectList(request, getToken(), Project.class);
     }
-    private Set<LocalRepo> cloneAllProjects(Set<Project> projects) throws IOException {
+    private Set<LocalRepo> cloneAllProjects(Set<Project> projects) throws IOException, GitAPIException {
         File parent = new File(getCloneFolder());
 
         if(!parent.isDirectory()){
@@ -80,17 +77,11 @@ public class Gitlab extends GitEngine {
         Set<LocalRepo> localRepos = new HashSet<>();
 
         for(Project project: projects) {
-            try{
-                final File destination = new File(parent, project.getName());
-                final String branch = getBranchForProject(project.getName());
-                final String url = project.getHttpUrlToRepo();
-                final LocalRepo localRepo = GitUtils.loadCurrentRepository(url, getToken(), destination, branch);
-                localRepos.add(localRepo);
-            } catch (GitAPIException e){
-                logger.error(String.format("Failed to clone '%s': %s",
-                        project.getName(),
-                        e.getMessage()));
-            }
+            final File destination = new File(parent, project.getName());
+            final String branch = getBranchForProject(project.getName());
+            final String url = project.getHttpUrlToRepo();
+            final LocalRepo localRepo = GitUtils.loadCurrentRepository(url, getToken(), destination, branch);
+            localRepos.add(localRepo);
         }
 
         return localRepos;

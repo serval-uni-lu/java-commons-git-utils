@@ -1,6 +1,6 @@
-package org.ukwikora.gitloader;
+package tech.ikora.gitloader;
 
-import org.ukwikora.gitloader.gitlab.Gitlab;
+import tech.ikora.gitloader.gitlab.Gitlab;
 
 public class GitEngineFactory {
     public static GitEngine create(Api api){
