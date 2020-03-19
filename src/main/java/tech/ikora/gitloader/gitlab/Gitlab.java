@@ -4,7 +4,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import tech.ikora.gitloader.GitEngine;
 import tech.ikora.gitloader.call.RestConnection;
 import tech.ikora.gitloader.git.GitUtils;
-import tech.ikora.gitloader.git.LocalRepo;
+import tech.ikora.gitloader.git.LocalRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,19 +20,19 @@ public class Gitlab extends GitEngine {
     }
 
     @Override
-    public Set<LocalRepo> cloneProjectsFromNames(Set<String> projectNames) throws GitAPIException, IOException {
+    public Set<LocalRepository> cloneProjectsFromNames(Set<String> projectNames) throws GitAPIException, IOException {
         final Set<Project> projects = findProjectsByNames(projectNames);
         return cloneAllProjects(projects);
     }
 
     @Override
-    public Set<LocalRepo> cloneProjectsFromGroup(String group) throws IOException, GitAPIException {
+    public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, GitAPIException {
         final Set<Project> projects = findProjectsByGroupName(group);
         return cloneAllProjects(projects);
     }
 
     @Override
-    public Set<LocalRepo> cloneProjectsFromUser(String user) throws IOException, GitAPIException {
+    public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, GitAPIException {
         final Set<Project> projects = findProjectsByUserName(user);
         return cloneAllProjects(projects);
     }
@@ -67,24 +67,24 @@ public class Gitlab extends GitEngine {
         final String request = getUrl() + api + "/users/" + userId + "/projects";
         return RestConnection.getObjectList(request, getToken(), Project.class);
     }
-    private Set<LocalRepo> cloneAllProjects(Set<Project> projects) throws IOException, GitAPIException {
+    private Set<LocalRepository> cloneAllProjects(Set<Project> projects) throws IOException, GitAPIException {
         File parent = new File(getCloneFolder());
 
         if(!parent.isDirectory()){
             return Collections.emptySet();
         }
 
-        Set<LocalRepo> localRepos = new HashSet<>();
+        Set<LocalRepository> localRepositories = new HashSet<>();
 
         for(Project project: projects) {
             final File destination = new File(parent, project.getName());
             final String branch = getBranchForProject(project.getName());
             final String url = project.getHttpUrlToRepo();
-            final LocalRepo localRepo = GitUtils.loadCurrentRepository(url, getToken(), destination, branch);
-            localRepos.add(localRepo);
+            final LocalRepository localRepository = GitUtils.loadCurrentRepository(url, getToken(), destination, branch);
+            localRepositories.add(localRepository);
         }
 
-        return localRepos;
+        return localRepositories;
     }
 
     private Set<Project> findProjectsByNames(Set<String> names) throws IOException {

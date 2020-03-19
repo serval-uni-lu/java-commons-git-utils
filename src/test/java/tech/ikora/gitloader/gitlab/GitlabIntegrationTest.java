@@ -1,7 +1,7 @@
 package tech.ikora.gitloader.gitlab;
 
 import org.junit.jupiter.api.Test;
-import tech.ikora.gitloader.git.LocalRepo;
+import tech.ikora.gitloader.git.LocalRepository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,8 +46,8 @@ class GitlabIntegrationTest {
     void testCloningFromGroup(){
         try{
             Gitlab gitlab = createEngine();
-            final Set<LocalRepo> localRepos = gitlab.cloneProjectsFromGroup("ukwikora");
-            assertEquals(3, localRepos.size());
+            final Set<LocalRepository> localRepositories = gitlab.cloneProjectsFromGroup("ukwikora");
+            assertEquals(3, localRepositories.size());
         } catch (Exception e) {
             fail(e.getMessage());
         }

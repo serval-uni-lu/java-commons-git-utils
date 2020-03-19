@@ -1,7 +1,7 @@
 package tech.ikora.gitloader;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
-import tech.ikora.gitloader.git.LocalRepo;
+import tech.ikora.gitloader.git.LocalRepository;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public abstract class GitEngine {
         return branches.getOrDefault(project, defaultBranch);
     }
 
-    abstract public Set<LocalRepo> cloneProjectsFromNames(Set<String> names) throws GitAPIException, IOException;
-    abstract public Set<LocalRepo> cloneProjectsFromGroup(String group) throws IOException, GitAPIException;
-    abstract public Set<LocalRepo> cloneProjectsFromUser(String user) throws IOException, GitAPIException;
+    abstract public Set<LocalRepository> cloneProjectsFromNames(Set<String> names) throws GitAPIException, IOException;
+    abstract public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, GitAPIException;
+    abstract public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, GitAPIException;
 }
