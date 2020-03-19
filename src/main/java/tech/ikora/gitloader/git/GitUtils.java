@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GitUtils {
     public static LocalRepository createLocalRepository(Git git) throws GitAPIException, IOException {
@@ -146,8 +147,14 @@ public class GitUtils {
     }
 
     public static Ref checkout(Git git, String commitId) throws GitAPIException {
+        boolean createBranch = git.branchList().call()
+                .stream()
+                .map(Ref::getName)
+                .collect(Collectors.toSet())
+                .contains("ref/heads/" + commitId);
+
         return git.checkout()
-                .setCreateBranch(true)
+                .setCreateBranch(createBranch)
                 .setName(commitId)
                 .setStartPoint(commitId)
                 .call();
