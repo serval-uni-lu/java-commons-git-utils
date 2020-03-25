@@ -4,16 +4,25 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.EmptyTreeIterator;
+import org.eclipse.jgit.treewalk.FileTreeIterator;
+import org.eclipse.jgit.util.io.NullOutputStream;
 import tech.ikora.gitloader.exception.CommitNotFoundException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,10 +41,12 @@ public class GitUtils {
             }
 
             final RevCommit commit = revWalk.parseCommit(head);
+            final RevCommit previousCommit = getPreviousCommit(git, commit);
+            final List<DiffEntry> diffEntries = getDiff(git, previousCommit, commit);
 
             final File location = git.getRepository().getDirectory().getParentFile();
             final String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen());
+            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen(), diffEntries);
 
             localRepository = new LocalRepository(git, location, remote, gitCommit);
         }
@@ -78,17 +89,20 @@ public class GitUtils {
             }
             else{
                 ObjectId branchId = git.getRepository().resolve("remotes/origin/" + branch);
-
                 revCommits = git.log().addRange(masterId, branchId).call();
             }
 
-            for (RevCommit revCommit : revCommits) {
-                Instant instant = Instant.ofEpochSecond(revCommit.getCommitTime());
+            RevCommit previousCommit = null;
+            for (RevCommit commit : revCommits) {
+                Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
                 Date commitDate = Date.from(instant);
 
                 if(isInInterval(commitDate, start, end)){
-                    commits.add(new GitCommit(revCommit.getName(), commitDate));
+                    List<DiffEntry> diffEntries = getDiff(git, previousCommit, commit);
+                    commits.add(new GitCommit(commit.getName(), commitDate, diffEntries));
                 }
+
+                previousCommit = commit;
             }
 
             commits.sort(Comparator.comparing(GitCommit::getDate));
@@ -100,7 +114,7 @@ public class GitUtils {
         }
     }
 
-    private static Date getCommitDate(Git git, ObjectId commitId) throws GitAPIException, IOException {
+    public static Date getCommitDate(Git git, ObjectId commitId) throws GitAPIException, IOException {
         RevWalk revWalk = new RevWalk(git.getRepository());
         RevCommit revCommit = revWalk.parseCommit(commitId);
 
@@ -158,5 +172,42 @@ public class GitUtils {
                 .setName(commitId)
                 .setStartPoint(commitId)
                 .call();
+    }
+
+    private static RevCommit getPreviousCommit(Git git, RevCommit commit)  throws  IOException {
+        try (RevWalk walk = new RevWalk(git.getRepository())) {
+            walk.markStart(commit);
+            int count = 0;
+            for (RevCommit rev : walk) {
+                if (count == 1) {
+                    return rev;
+                }
+                count++;
+            }
+            walk.dispose();
+        }
+
+        return null;
+    }
+
+    private static List<DiffEntry> getDiff(Git git, RevCommit commit1, RevCommit commit2) throws IOException, GitAPIException {
+        AbstractTreeIterator oldTreeIterator = getTreeIterator(git, commit1);
+        AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit2);
+
+        OutputStream outputStream = NullOutputStream.INSTANCE;
+        try( DiffFormatter formatter = new DiffFormatter( outputStream ) ) {
+            formatter.setRepository( git.getRepository() );
+             return formatter.scan( oldTreeIterator, newTreeIterator );
+        }
+    }
+
+    private static AbstractTreeIterator getTreeIterator(Git git, RevCommit commit) throws IOException {
+        if(commit == null){
+            return new EmptyTreeIterator();
+        }
+
+        try( ObjectReader reader = git.getRepository().newObjectReader() ) {
+            return new CanonicalTreeParser(null, reader, commit.getTree().getId());
+        }
     }
 }

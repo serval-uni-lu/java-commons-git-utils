@@ -1,14 +1,19 @@
 package tech.ikora.gitloader.git;
 
+import org.eclipse.jgit.diff.DiffEntry;
+
 import java.util.Date;
+import java.util.List;
 
 public class GitCommit {
-    private String id;
-    private Date date;
+    private final String id;
+    private final Date date;
+    private final List<DiffEntry> diffEntries;
 
-    public GitCommit(String id, Date date) {
+    public GitCommit(String id, Date date, List<DiffEntry> diffEntries) {
         this.id = id;
         this.date = date;
+        this.diffEntries = diffEntries;
     }
 
     public String getId() {
@@ -17,5 +22,9 @@ public class GitCommit {
 
     public Date getDate() {
         return date;
+    }
+
+    public List<DiffEntry> getDiffEntries() {
+        return diffEntries;
     }
 }
