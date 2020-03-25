@@ -24,6 +24,7 @@ public class Group {
     private String full_name;
     private String full_path;
     private int parent_id;
+    private int default_branch_protection;
 
     private String ldap_cn;
     private String ldap_access;
@@ -246,5 +247,15 @@ public class Group {
     @JsonSetter("ldap_access")
     public void setLdapAccess(String ldap_access) {
         this.ldap_access = ldap_access;
+    }
+
+    @JsonGetter("default_branch_protection")
+    public int getDefaultBranchProtection(){
+        return default_branch_protection;
+    }
+
+    @JsonSetter("default_branch_protection")
+    public void setDefaultBranchProtection(int default_branch_protection){
+        this.default_branch_protection = default_branch_protection;
     }
 }

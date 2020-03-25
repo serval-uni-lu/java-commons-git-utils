@@ -45,6 +45,7 @@ public class Project {
     private String issues_access_level;
     private String repository_access_level;
     private String merge_requests_access_level;
+    private String forking_access_level;
     private String wiki_access_level;
     private String builds_access_level;
     private String snippets_access_level;
@@ -441,6 +442,16 @@ public class Project {
     @JsonGetter("merge_requests_access_level")
     public String getMergeRequestsAccessLevel() {
         return merge_requests_access_level;
+    }
+
+    @JsonSetter("forking_access_level")
+    public void setForkingAccessLevel(String forkingAccessLevel){
+        this.forking_access_level = forkingAccessLevel;
+    }
+
+    @JsonGetter("forking_access_level")
+    public String getForkingAccessLevel() {
+        return forking_access_level;
     }
 
     @JsonSetter("builds_access_level")
