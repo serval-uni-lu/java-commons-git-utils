@@ -25,6 +25,7 @@ public class Group {
     private String full_path;
     private int parent_id;
     private int default_branch_protection;
+    private String created_at;
 
     private String ldap_cn;
     private String ldap_access;
@@ -257,5 +258,15 @@ public class Group {
     @JsonSetter("default_branch_protection")
     public void setDefaultBranchProtection(int default_branch_protection){
         this.default_branch_protection = default_branch_protection;
+    }
+
+    @JsonGetter("created_at")
+    public String getCreatedAt(){
+        return created_at;
+    }
+
+    @JsonSetter("created_at")
+    public void setCreatedAt(String created_at){
+        this.created_at = created_at;
     }
 }

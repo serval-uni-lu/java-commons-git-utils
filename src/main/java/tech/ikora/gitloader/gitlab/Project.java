@@ -62,6 +62,7 @@ public class Project {
     private String ci_config_path;
     private List<String> shared_with_groups;
     private boolean only_allow_merge_if_pipeline_succeeds;
+    private boolean allow_merge_on_skipped_pipeline;
     private boolean request_access_enabled;
     private boolean only_allow_merge_if_all_discussions_are_resolved;
     private boolean remove_source_branch_after_merge;
@@ -69,6 +70,8 @@ public class Project {
     private String merge_method;
     private boolean autoclose_referenced_issues;
     private String suggestion_commit_message;
+    private String marked_for_deletion_on;
+    private List<String> compliance_frameworks;
     private boolean auto_devops_enabled;
     private String auto_devops_deploy_strategy;
     private Map<String, String> permissions;
@@ -559,8 +562,19 @@ public class Project {
         return only_allow_merge_if_pipeline_succeeds;
     }
 
-    public void setOnly_allow_merge_if_pipeline_succeeds(boolean only_allow_merge_if_pipeline_succeeds) {
+    @JsonSetter("only_allow_merge_if_pipeline_succeeds")
+    public void setOnlyAllowMergeIfPipelineSucceeds(boolean only_allow_merge_if_pipeline_succeeds) {
         this.only_allow_merge_if_pipeline_succeeds = only_allow_merge_if_pipeline_succeeds;
+    }
+
+    @JsonGetter("allow_merge_on_skipped_pipeline")
+    public boolean getAllowMergeOnSkippedPipeline() {
+        return allow_merge_on_skipped_pipeline;
+    }
+
+    @JsonSetter("allow_merge_on_skipped_pipeline")
+    public void setAllowMergeOnSkippedPipeline(boolean allow_merge_on_skipped_pipeline) {
+        this.allow_merge_on_skipped_pipeline = allow_merge_on_skipped_pipeline;
     }
 
     @JsonGetter("request_access_enabled")
@@ -631,6 +645,26 @@ public class Project {
     @JsonSetter("suggestion_commit_message")
     public void isSuggestionCommitMessage(String suggestion_commit_message) {
         this.suggestion_commit_message = suggestion_commit_message;
+    }
+
+    @JsonGetter("marked_for_deletion_on")
+    public String getMarkedForDeletionOn() {
+        return marked_for_deletion_on;
+    }
+
+    @JsonSetter("marked_for_deletion_on")
+    public void setMarkedForDeletionOn(String marked_for_deletion_on) {
+        this.marked_for_deletion_on = marked_for_deletion_on;
+    }
+
+    @JsonGetter("compliance_frameworks")
+    public List<String> getComplianceFrameworks() {
+        return compliance_frameworks;
+    }
+
+    @JsonSetter("compliance_frameworks")
+    public void setComplianceFrameworks(List<String> compliance_frameworks) {
+        this.compliance_frameworks = compliance_frameworks;
     }
 
     @JsonGetter("approvals_before_merge")
