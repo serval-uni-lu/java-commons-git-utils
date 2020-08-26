@@ -18,15 +18,20 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import org.eclipse.jgit.util.io.NullOutputStream;
 import tech.ikora.gitloader.exception.CommitNotFoundException;
+import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class GitUtils {
+    private static final Pattern pattern = Pattern.compile("(https://)?(github\\.com|bitbucket.org)/(.*)/(.*)\\.git", Pattern.CASE_INSENSITIVE);
+
     public static LocalRepository createLocalRepository(Git git) throws GitAPIException, IOException {
         LocalRepository localRepository;
 
@@ -196,6 +201,15 @@ public class GitUtils {
         Collections.reverse(filtered);
 
         return filtered;
+    }
+
+    public static String extractProjectName(String url) throws InvalidGitRepositoryException {
+        Matcher matcher = pattern.matcher(url);
+        if(!matcher.matches()){
+            throw new InvalidGitRepositoryException(url);
+        }
+
+        return String.format("%s-%s", matcher.group(3), matcher.group(4));
     }
 
     private static RevCommit getPreviousCommit(Git git, RevCommit commit)  throws  IOException {
