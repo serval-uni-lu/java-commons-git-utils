@@ -16,7 +16,6 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
-import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.util.io.NullOutputStream;
 import tech.ikora.gitloader.exception.CommitNotFoundException;
 
@@ -174,6 +173,31 @@ public class GitUtils {
                 .call();
     }
 
+    public static List<GitCommit> filterCommitsByFrequency(List<GitCommit> commits, Frequency frequency) {
+        if(frequency == Frequency.UNIQUE){
+            return commits;
+        }
+
+        List<GitCommit> filtered = new ArrayList<>(commits.size());
+        ListIterator<GitCommit> iterator = commits.listIterator(commits.size());
+
+        Date previousDate = null;
+        while (iterator.hasPrevious()){
+            GitCommit commit = iterator.previous();
+            Date commitDate = commit.getDate();
+
+            if(!isSameFrequencyBucket(previousDate, commitDate, frequency)){
+                filtered.add(commit);
+            }
+
+            previousDate = commitDate;
+        }
+
+        Collections.reverse(filtered);
+
+        return filtered;
+    }
+
     private static RevCommit getPreviousCommit(Git git, RevCommit commit)  throws  IOException {
         try (RevWalk walk = new RevWalk(git.getRepository())) {
             walk.markStart(commit);
@@ -209,5 +233,74 @@ public class GitUtils {
         try( ObjectReader reader = git.getRepository().newObjectReader() ) {
             return new CanonicalTreeParser(null, reader, commit.getTree().getId());
         }
+    }
+
+    private static boolean isSameFrequencyBucket(Date date1, Date date2, Frequency frequency) {
+        if(date1 == null || date2 == null){
+            return false;
+        }
+
+        switch (frequency) {
+            case DAILY: return isSameDay(date1, date2);
+            case WEEKLY: return isSameWeek(date1, date2);
+            case MONTHLY: return isSameMonth(date1, date2);
+            case YEARLY: return isSameYear(date1, date2);
+        }
+
+        return false;
+    }
+
+    private static boolean isSameDay(Date date1, Date date2){
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(date1);
+        int day1 = calendar.get(Calendar.DAY_OF_YEAR);
+        int year1 = calendar.get(Calendar.YEAR);
+
+        calendar.setTime(date2);
+        int day2 = calendar.get(Calendar.DAY_OF_YEAR);
+        int year2 = calendar.get(Calendar.YEAR);
+
+        return day1 == day2 && year1 == year2;
+    }
+
+    private static boolean isSameWeek(Date date1, Date date2){
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(date1);
+        int week1 = calendar.get(Calendar.WEEK_OF_YEAR);
+        int year1 = calendar.get(Calendar.YEAR);
+
+        calendar.setTime(date2);
+        int week2 = calendar.get(Calendar.WEEK_OF_YEAR);
+        int year2 = calendar.get(Calendar.YEAR);
+
+        return week1 == week2 && year1 == year2;
+    }
+
+    private static boolean isSameMonth(Date date1, Date date2){
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(date1);
+        int month1 = calendar.get(Calendar.MONTH);
+        int year1 = calendar.get(Calendar.YEAR);
+
+        calendar.setTime(date2);
+        int month2 = calendar.get(Calendar.MONTH);
+        int year2 = calendar.get(Calendar.YEAR);
+
+        return month1 == month2 && year1 == year2;
+    }
+
+    private static boolean isSameYear(Date date1, Date date2){
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(date1);
+        int year1 = calendar.get(Calendar.YEAR);
+
+        calendar.setTime(date2);
+        int year2 = calendar.get(Calendar.YEAR);
+
+        return year1 == year2;
     }
 }
