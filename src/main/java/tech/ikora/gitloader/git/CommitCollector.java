@@ -1,7 +1,10 @@
 package tech.ikora.gitloader.git;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffEntry;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +19,7 @@ public class CommitCollector {
     private Set<String> ignored = Collections.emptySet();
     private Frequency frequency = Frequency.UNIQUE;
     private int limit = 0;
+    private Set<String> filterNoChangeIn = null;
 
     public CommitCollector forGit(Git git){
         this.git = git;
@@ -39,6 +43,11 @@ public class CommitCollector {
 
     public CommitCollector ignoring(Set<String> commitIds){
         this.ignored = commitIds;
+        return this;
+    }
+
+    public CommitCollector filterNoChangeIn(Set<String> foldersToWatch){
+        this.filterNoChangeIn = foldersToWatch;
         return this;
     }
 
@@ -66,8 +75,36 @@ public class CommitCollector {
                     .collect(Collectors.toList());
         }
 
+        commits = commits.stream()
+                .filter(c -> isSubfolderChanged(c, filterNoChangeIn))
+                .collect(Collectors.toList());
+
         commits = GitUtils.filterCommitsByFrequency(commits, frequency);
 
         return limit > 0 ? commits.subList(0, Math.min(commits.size(), limit)) : commits;
+    }
+
+    private static boolean isSubfolderChanged(GitCommit commit, Set<String> subFolders) {
+        if(subFolders == null || subFolders.isEmpty()){
+            return true;
+        }
+
+        for(DiffEntry diffEntry: commit.getDiffEntries()){
+            for(String subFolder: subFolders){
+                try {
+                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())){
+                        return true;
+                    }
+
+                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getNewPath())){
+                        return true;
+                    }
+                } catch (IOException e) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
