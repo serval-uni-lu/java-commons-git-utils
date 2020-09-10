@@ -69,12 +69,17 @@ public class GitUtils {
 
         LocalRepository localRepository;
 
+        String branchId = String.format("refs/heads/%s", branch);
+
         Git git = Git.cloneRepository()
                 .setURI(url)
                 .setCredentialsProvider(credentials)
-                .setBranch(branch)
+                .setBranchesToClone(Collections.singleton(branchId))
+                .setBranch(branchId)
                 .setDirectory(localFolder)
                 .call();
+
+        git.checkout().call();
 
         localRepository = GitUtils.createLocalRepository(git);
 
