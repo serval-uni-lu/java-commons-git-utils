@@ -1,6 +1,6 @@
 package tech.ikora.gitloader;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
+import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 import tech.ikora.gitloader.git.LocalRepository;
 
 import java.io.IOException;
@@ -66,7 +66,7 @@ public abstract class GitEngine {
         return branches.getOrDefault(project, defaultBranch);
     }
 
-    abstract public Set<LocalRepository> cloneProjectsFromNames(Set<String> names) throws GitAPIException, IOException;
-    abstract public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, GitAPIException;
-    abstract public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, GitAPIException;
+    abstract public Set<LocalRepository> cloneProjectsFromNames(Set<String> names) throws IOException, InvalidGitRepositoryException;
+    abstract public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, InvalidGitRepositoryException;
+    abstract public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, InvalidGitRepositoryException;
 }

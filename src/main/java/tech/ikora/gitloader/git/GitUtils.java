@@ -59,29 +59,33 @@ public class GitUtils {
     }
 
     public static LocalRepository loadCurrentRepository(String url, String token, File localFolder, String branch)
-            throws GitAPIException, IOException {
+            throws IOException, InvalidGitRepositoryException {
         if(localFolder.exists()){
             FileUtils.deleteDirectory(localFolder);
         }
 
+        LocalRepository localRepository;
+
         UsernamePasswordCredentialsProvider credentials =
                 new UsernamePasswordCredentialsProvider("PRIVATE-TOKEN", token);
 
-        LocalRepository localRepository;
-
         String branchId = String.format("refs/heads/%s", branch);
 
-        Git git = Git.cloneRepository()
-                .setURI(url)
-                .setCredentialsProvider(credentials)
-                .setBranchesToClone(Collections.singleton(branchId))
-                .setBranch(branchId)
-                .setDirectory(localFolder)
-                .call();
+        try{
+            Git git = Git.cloneRepository()
+                    .setURI(url)
+                    .setCredentialsProvider(credentials)
+                    .setBranchesToClone(Collections.singleton(branchId))
+                    .setBranch(branchId)
+                    .setDirectory(localFolder)
+                    .call();
 
-        git.checkout().call();
-
-        localRepository = GitUtils.createLocalRepository(git);
+            localRepository = GitUtils.createLocalRepository(git);
+        }
+        catch (GitAPIException e){
+            throw new InvalidGitRepositoryException(String.format("Failed to load repository %s: %s",
+                    url, e.getMessage()));
+        }
 
         return localRepository;
     }

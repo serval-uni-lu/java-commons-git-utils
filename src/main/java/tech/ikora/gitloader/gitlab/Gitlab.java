@@ -1,8 +1,8 @@
 package tech.ikora.gitloader.gitlab;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import tech.ikora.gitloader.GitEngine;
 import tech.ikora.gitloader.call.RestConnection;
+import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 import tech.ikora.gitloader.git.GitUtils;
 import tech.ikora.gitloader.git.LocalRepository;
 
@@ -20,19 +20,19 @@ public class Gitlab extends GitEngine {
     }
 
     @Override
-    public Set<LocalRepository> cloneProjectsFromNames(Set<String> projectNames) throws GitAPIException, IOException {
+    public Set<LocalRepository> cloneProjectsFromNames(Set<String> projectNames) throws IOException, InvalidGitRepositoryException {
         final Set<Project> projects = findProjectsByNames(projectNames);
         return cloneAllProjects(projects);
     }
 
     @Override
-    public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, GitAPIException {
+    public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, InvalidGitRepositoryException {
         final Set<Project> projects = findProjectsByGroupName(group);
         return cloneAllProjects(projects);
     }
 
     @Override
-    public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, GitAPIException {
+    public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, InvalidGitRepositoryException {
         final Set<Project> projects = findProjectsByUserName(user);
         return cloneAllProjects(projects);
     }
@@ -67,7 +67,7 @@ public class Gitlab extends GitEngine {
         final String request = getUrl() + api + "/users/" + userId + "/projects";
         return RestConnection.getObjectList(request, getToken(), Project.class);
     }
-    private Set<LocalRepository> cloneAllProjects(Set<Project> projects) throws IOException, GitAPIException {
+    private Set<LocalRepository> cloneAllProjects(Set<Project> projects) throws IOException, InvalidGitRepositoryException {
         File parent = new File(getCloneFolder());
 
         if(!parent.isDirectory()){
