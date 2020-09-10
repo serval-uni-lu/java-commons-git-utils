@@ -4,7 +4,7 @@
 
     <groupId>tech.ikora</groupId>
     <artifactId>git-loader</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5-SNAPSHOT</version>
 
     <name>Ikora Git-Loader</name>
     <url>https://github.com/kabinja/git-loader</url>
@@ -17,7 +17,7 @@
         <connection>scm:git:git://github.com/kabinja/git-loader.git</connection>
         <developerConnection>scm:git:git@github.com:kabinja/kabinja.git</developerConnection>
         <url>https://github.com/kabinja/git-loader</url>
-        <tag>git-loader-0.1.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
