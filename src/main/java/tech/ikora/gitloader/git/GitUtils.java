@@ -96,12 +96,12 @@ public class GitUtils {
         try {
             Iterable<RevCommit> revCommits;
             ObjectId masterId = git.getRepository().resolve("remotes/origin/master");
+            ObjectId branchId = git.getRepository().resolve("remotes/origin/" + branch);
 
-            if(branch.equals("master") || masterId == null){
+            if(branch.equals("master") || branchId == null || masterId == null){
                 revCommits = git.log().call();
             }
             else{
-                ObjectId branchId = git.getRepository().resolve("remotes/origin/" + branch);
                 revCommits = git.log().addRange(masterId, branchId).call();
             }
 
@@ -127,11 +127,11 @@ public class GitUtils {
         }
     }
 
-    public static Date getCommitDate(Git git, ObjectId commitId) throws GitAPIException, IOException {
-        RevWalk revWalk = new RevWalk(git.getRepository());
-        RevCommit revCommit = revWalk.parseCommit(commitId);
-
-        return revCommit.getAuthorIdent().getWhen();
+    public static Date getCommitDate(Git git, ObjectId commitId) throws IOException {
+        try(RevWalk revWalk = new RevWalk(git.getRepository())){
+            RevCommit revCommit = revWalk.parseCommit(commitId);
+            return revCommit.getAuthorIdent().getWhen();
+        }
     }
 
     private static boolean isInInterval(Date date, Date startDate, Date endDate){
@@ -237,7 +237,7 @@ public class GitUtils {
         return null;
     }
 
-    private static List<DiffEntry> getDiff(Git git, RevCommit commit1, RevCommit commit2) throws IOException, GitAPIException {
+    private static List<DiffEntry> getDiff(Git git, RevCommit commit1, RevCommit commit2) throws IOException {
         AbstractTreeIterator oldTreeIterator = getTreeIterator(git, commit1);
         AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit2);
 
