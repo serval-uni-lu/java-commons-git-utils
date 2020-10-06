@@ -19,7 +19,8 @@ public class CommitCollector {
     private Set<String> ignored = Collections.emptySet();
     private Frequency frequency = Frequency.UNIQUE;
     private int limit = 0;
-    private Set<String> filterNoChangeIn = null;
+    private Set<String> filterNoChangeIn = Collections.emptySet();
+    private Set<String> extensions = Collections.emptySet();
 
     public CommitCollector forGit(Git git){
         this.git = git;
@@ -51,6 +52,12 @@ public class CommitCollector {
         return this;
     }
 
+    public CommitCollector forExtensions(Set<String> extensions){
+        this.extensions = extensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
+
+        return this;
+    }
+
     public CommitCollector every(Frequency frequency){
         this.frequency = frequency;
         return this;
@@ -76,7 +83,7 @@ public class CommitCollector {
         }
 
         commits = commits.stream()
-                .filter(c -> isSubfolderChanged(c, filterNoChangeIn))
+                .filter(c -> isSubfolderChanged(c, filterNoChangeIn, extensions))
                 .collect(Collectors.toList());
 
         commits = GitUtils.filterCommitsByFrequency(commits, frequency);
@@ -84,7 +91,15 @@ public class CommitCollector {
         return limit > 0 ? commits.subList(0, Math.min(commits.size(), limit)) : commits;
     }
 
-    private static boolean isSubfolderChanged(GitCommit commit, Set<String> subFolders) {
+    private static boolean hasExtension(String path, Set<String> extensions){
+        if(extensions == null || extensions.isEmpty()){
+            return true;
+        }
+
+        return extensions.contains(FilenameUtils.getExtension(path));
+    }
+
+    private static boolean isSubfolderChanged(GitCommit commit, Set<String> subFolders, Set<String> extensions) {
         if(subFolders == null || subFolders.isEmpty()){
             return true;
         }
@@ -92,11 +107,13 @@ public class CommitCollector {
         for(DiffEntry diffEntry: commit.getDiffEntries()){
             for(String subFolder: subFolders){
                 try {
-                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())){
+                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())
+                            && hasExtension(diffEntry.getOldPath(), extensions)){
                         return true;
                     }
 
-                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getNewPath())){
+                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getNewPath())
+                            && hasExtension(diffEntry.getNewPath(), extensions)){
                         return true;
                     }
                 } catch (IOException e) {
