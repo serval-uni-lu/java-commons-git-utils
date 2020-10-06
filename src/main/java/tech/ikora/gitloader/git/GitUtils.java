@@ -2,6 +2,7 @@ package tech.ikora.gitloader.git;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -95,8 +96,8 @@ public class GitUtils {
 
         try {
             Iterable<RevCommit> revCommits;
-            ObjectId masterId = git.getRepository().resolve("remotes/origin/master");
-            ObjectId branchId = git.getRepository().resolve("remotes/origin/" + branch);
+            ObjectId masterId = resolveBranch(git, "master");
+            ObjectId branchId = resolveBranch(git, branch);
 
             if(branch.equals("master") || branchId == null || masterId == null){
                 revCommits = git.log().call();
@@ -132,6 +133,17 @@ public class GitUtils {
             RevCommit revCommit = revWalk.parseCommit(commitId);
             return revCommit.getAuthorIdent().getWhen();
         }
+    }
+
+    private static ObjectId resolveBranch(Git git, String branch) throws IOException {
+        ObjectId objectId = git.getRepository().resolve("remotes/origin/" + branch);
+
+        // check locally
+        if(objectId == null){
+            objectId = git.getRepository().resolve("refs/heads/" + branch);
+        }
+
+        return objectId;
     }
 
     private static boolean isInInterval(Date date, Date startDate, Date endDate){

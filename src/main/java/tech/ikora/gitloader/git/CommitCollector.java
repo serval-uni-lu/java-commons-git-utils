@@ -15,7 +15,7 @@ public class CommitCollector {
     private Git git;
     private Date start;
     private Date end;
-    private String branch;
+    private String branch = "master";
     private Set<String> ignored = Collections.emptySet();
     private Frequency frequency = Frequency.UNIQUE;
     private int limit = 0;
@@ -54,7 +54,6 @@ public class CommitCollector {
 
     public CommitCollector forExtensions(Set<String> extensions){
         this.extensions = extensions.stream().map(String::toLowerCase).collect(Collectors.toSet());
-
         return this;
     }
 
@@ -78,11 +77,12 @@ public class CommitCollector {
 
         if(ignored != null && !ignored.isEmpty()){
             commits = commits.stream()
-                    .filter(commit -> ignored.contains(commit.getId()))
+                    .filter(commit -> !ignored.contains(commit.getId()))
                     .collect(Collectors.toList());
         }
 
         commits = commits.stream()
+                .filter(c -> isContainExtension(c, extensions))
                 .filter(c -> isSubfolderChanged(c, filterNoChangeIn, extensions))
                 .collect(Collectors.toList());
 
@@ -99,8 +99,26 @@ public class CommitCollector {
         return extensions.contains(FilenameUtils.getExtension(path));
     }
 
+    private static boolean isContainExtension(GitCommit commit, Set<String> extensions) {
+        if(extensions == null || extensions.isEmpty()){
+            return true;
+        }
+
+        for(DiffEntry diffEntry: commit.getDiffEntries()){
+            if(hasExtension(diffEntry.getOldPath(), extensions)){
+                return true;
+            }
+
+            if(hasExtension(diffEntry.getNewPath(), extensions)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static boolean isSubfolderChanged(GitCommit commit, Set<String> subFolders, Set<String> extensions) {
-        if(subFolders == null || subFolders.isEmpty()){
+        if((subFolders == null || subFolders.isEmpty())){
             return true;
         }
 
