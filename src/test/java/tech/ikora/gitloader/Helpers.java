@@ -74,7 +74,7 @@ public class Helpers {
 
     public static Git setRepository(String zipResource){
         try {
-            File folder = Helpers.unzip(Helpers.getResourceFile("git-repos/git-1.zip"));
+            File folder = Helpers.unzip(Helpers.getResourceFile(zipResource));
             return Git.open(new File(folder, ".git"));
         } catch (IOException | URISyntaxException e) {
             fail(String.format("Failed to load git repository from archive [%s]: %s", zipResource, e.getMessage()));
