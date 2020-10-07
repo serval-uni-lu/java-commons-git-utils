@@ -1,5 +1,6 @@
 package tech.ikora.gitloader.git;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import tech.ikora.gitloader.Helpers;
 import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +51,23 @@ class GitUtilsTest {
     void testNameExtractionFromGithubUrl() throws InvalidGitRepositoryException {
         final String name = GitUtils.extractProjectName("https://github.com/kabinja/git-loader.git");
         assertEquals("kabinja-git-loader", name);
+    }
+
+    @Test
+    void testCheckoutWithInvalidCommit() throws GitAPIException, IOException {
+        final LocalRepository localRepository = GitUtils.createLocalRepository(git2);
+
+        final File directory = localRepository.getLocation();
+        final String[] extensions = new String[]{"java"};
+
+        GitUtils.checkout(localRepository.getGit(), "");
+        assertEquals(0, FileUtils.listFiles(directory, extensions, true).size());
+
+        GitUtils.checkout(localRepository.getGit(), localRepository.getGitCommit().getId());
+        assertEquals(1, FileUtils.listFiles(directory, extensions, true).size());
+
+        GitUtils.checkout(localRepository.getGit(), "");
+        assertEquals(0, FileUtils.listFiles(directory, extensions, true).size());
     }
 
     @AfterAll

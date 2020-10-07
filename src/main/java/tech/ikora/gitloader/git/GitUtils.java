@@ -174,7 +174,7 @@ public class GitUtils {
         return Optional.ofNullable(mostRecentCommit);
     }
 
-    public static Ref checkout(Git git, Date date, String branch) throws CommitNotFoundException, GitAPIException {
+    public static Ref checkout(Git git, Date date, String branch) throws CommitNotFoundException, GitAPIException, IOException {
         final Optional<GitCommit> mostRecentCommit = getMostRecentCommit(git, date, branch);
 
         if(!mostRecentCommit.isPresent()){
@@ -185,7 +185,20 @@ public class GitUtils {
         return checkout(git, mostRecentCommit.get().getId());
     }
 
-    public static Ref checkout(Git git, String commitId) throws GitAPIException {
+    public static Ref checkout(Git git, String commitId) throws GitAPIException, IOException {
+        if(commitId.isEmpty()){
+            final Ref ref = git.checkout()
+                    .setOrphan(true)
+                    .setName("ikora-empty-branch")
+                    .call();
+
+            git.rm().addFilepattern("*").call();
+            FileUtils.forceDelete(new File(git.getRepository().getDirectory(), "index"));
+            git.clean().setForce(true).setCleanDirectories(true).call();
+
+            return ref;
+        }
+
         boolean createBranch = git.branchList().call()
                 .stream()
                 .map(Ref::getName)
@@ -193,10 +206,10 @@ public class GitUtils {
                 .contains("ref/heads/" + commitId);
 
         return git.checkout()
-                .setCreateBranch(createBranch)
-                .setName(commitId)
-                .setStartPoint(commitId)
-                .call();
+            .setCreateBranch(createBranch)
+            .setName(commitId)
+            .setStartPoint(commitId)
+            .call();
     }
 
     public static List<GitCommit> filterCommitsByFrequency(List<GitCommit> commits, Frequency frequency) {

@@ -8,7 +8,7 @@ public class LocalRepository {
     private final Git git;
     private final File location;
     private final String remoteUrl;
-    private GitCommit gitCommit;
+    private final GitCommit gitCommit;
 
     public LocalRepository(Git git, File location, String remoteUrl, GitCommit gitCommit) {
         this.git = git;
