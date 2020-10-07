@@ -2,7 +2,6 @@ package tech.ikora.gitloader.git;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -31,6 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class GitUtils {
+    private static final String EMPTY_BRANCH = "ikora-empty-branch";
     private static final Pattern pattern = Pattern.compile("(https://)?(github\\.com|bitbucket.org)/(.*)/(.*)\\.git", Pattern.CASE_INSENSITIVE);
 
     public static LocalRepository createLocalRepository(Git git) throws GitAPIException, IOException {
@@ -135,15 +135,14 @@ public class GitUtils {
         }
     }
 
-    private static ObjectId resolveBranch(Git git, String branch) throws IOException {
-        ObjectId objectId = git.getRepository().resolve("remotes/origin/" + branch);
+    private static ObjectId resolveBranch(Git git, String branch) throws GitAPIException {
+            for(Ref ref: git.branchList().call()){
+                if(ref.getName().endsWith(branch)){
+                    return ref.getObjectId();
+                }
+            }
 
-        // check locally
-        if(objectId == null){
-            objectId = git.getRepository().resolve("refs/heads/" + branch);
-        }
-
-        return objectId;
+        return null;
     }
 
     private static boolean isInInterval(Date date, Date startDate, Date endDate){
@@ -188,8 +187,8 @@ public class GitUtils {
     public static Ref checkout(Git git, String commitId) throws GitAPIException, IOException {
         if(commitId.isEmpty()){
             final Ref ref = git.checkout()
-                    .setOrphan(true)
-                    .setName("ikora-empty-branch")
+                    .setCreateBranch(!isBranchExist(git, EMPTY_BRANCH))
+                    .setName(EMPTY_BRANCH)
                     .call();
 
             git.rm().addFilepattern("*").call();
@@ -199,17 +198,19 @@ public class GitUtils {
             return ref;
         }
 
-        boolean createBranch = git.branchList().call()
-                .stream()
-                .map(Ref::getName)
-                .collect(Collectors.toSet())
-                .contains("ref/heads/" + commitId);
-
         return git.checkout()
-            .setCreateBranch(createBranch)
+            .setCreateBranch(!isBranchExist(git, commitId))
             .setName(commitId)
             .setStartPoint(commitId)
             .call();
+    }
+
+    public static boolean isBranchExist(Git git, String branch) throws GitAPIException {
+        return git.branchList().call()
+                .stream()
+                .map(Ref::getName)
+                .collect(Collectors.toSet())
+                .stream().anyMatch(b -> b.endsWith(branch));
     }
 
     public static List<GitCommit> filterCommitsByFrequency(List<GitCommit> commits, Frequency frequency) {

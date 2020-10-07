@@ -70,6 +70,20 @@ class GitUtilsTest {
         assertEquals(0, FileUtils.listFiles(directory, extensions, true).size());
     }
 
+    @Test
+    void testCreateLocalRepositoryAfterInvalidCommit() throws GitAPIException, IOException {
+        final LocalRepository localRepository1 = GitUtils.createLocalRepository(git2);
+        GitUtils.checkout(localRepository1.getGit(), "");
+        final LocalRepository localRepository2 = GitUtils.createLocalRepository(git2);
+    }
+
+    @Test
+    void testInvalidCommitTwice() throws GitAPIException, IOException {
+        final LocalRepository localRepository1 = GitUtils.createLocalRepository(git2);
+        GitUtils.checkout(localRepository1.getGit(), "");
+        GitUtils.checkout(localRepository1.getGit(), "");
+    }
+
     @AfterAll
     static void teardown(){
         Helpers.deleteRepository(git2);

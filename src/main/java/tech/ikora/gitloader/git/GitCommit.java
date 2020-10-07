@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 public class GitCommit {
+    private final static GitCommit none = new GitCommit("", Date.from(Instant.EPOCH), Collections.emptyList());
+
     private final String id;
     private final Date date;
     private final List<DiffEntry> diffEntries;
@@ -19,7 +21,7 @@ public class GitCommit {
     }
 
     public static GitCommit none(){
-        return new GitCommit("", Date.from(Instant.EPOCH), Collections.emptyList());
+        return none;
     }
 
     public String getId() {
