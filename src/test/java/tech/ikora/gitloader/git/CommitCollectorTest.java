@@ -17,10 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommitCollectorTest {
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     private static Git git1;
+    private static Git git3;
 
     @BeforeAll
     static void setup() {
         git1 = Helpers.setRepository("git-repos/git-1.zip");
+        git3 = Helpers.setRepository("git-repos/git-3.zip");
     }
 
     @Test
@@ -140,6 +142,19 @@ class CommitCollectorTest {
                 .collect();
 
         assertEquals(13, commits.size());
+    }
+
+    @Test
+    void testCollectWithFrequencyVersion(){
+        final List<GitCommit> commits = new CommitCollector()
+                .forGit(git3)
+                .every(Frequency.VERSION)
+                .collect();
+
+        assertEquals(3, commits.size());
+        assertEquals("tag1", commits.get(0).getTag());
+        assertEquals("tag2", commits.get(1).getTag());
+        assertEquals("tag3", commits.get(2).getTag());
     }
 
     @Test

@@ -27,11 +27,10 @@ import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class GitUtils {
     private static final String EMPTY_BRANCH = "ikora-empty-branch";
-    private static final Pattern pattern = Pattern.compile("(https://)?(github\\.com|bitbucket.org)/(.*)/(.*)\\.git", Pattern.CASE_INSENSITIVE);
+    private static final Pattern pattern = Pattern.compile("(https://)?(github\\.com|bitbucket\\.org|gitlab\\.com)/(.*)/(.*)\\.git", Pattern.CASE_INSENSITIVE);
 
     public static LocalRepository createLocalRepository(Git git) throws GitAPIException, IOException {
         LocalRepository localRepository;
@@ -92,12 +91,11 @@ public class GitUtils {
     }
 
     public static List<GitCommit> getCommits(Git git, Date start, Date end, String branch) {
-        List<GitCommit> commits = new ArrayList<>();
-
         try {
-            Iterable<RevCommit> revCommits;
-            ObjectId masterId = resolveBranch(git, "master");
-            ObjectId branchId = resolveBranch(git, branch);
+            final List<GitCommit> commits = new ArrayList<>();
+            final Iterable<RevCommit> revCommits;
+            final ObjectId masterId = resolveBranch(git, "master");
+            final ObjectId branchId = resolveBranch(git, branch);
 
             if(branch.equals("master") || branchId == null || masterId == null){
                 revCommits = git.log().call();
@@ -106,17 +104,17 @@ public class GitUtils {
                 revCommits = git.log().addRange(masterId, branchId).call();
             }
 
-            RevCommit previousCommit = null;
+            RevCommit previous = null;
             for (RevCommit commit : revCommits) {
                 Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
                 Date commitDate = Date.from(instant);
 
                 if(isInInterval(commitDate, start, end)){
-                    List<DiffEntry> diffEntries = getDiff(git, previousCommit, commit);
+                    List<DiffEntry> diffEntries = getDiff(git, previous, commit);
                     commits.add(new GitCommit(commit.getName(), commitDate, diffEntries));
                 }
 
-                previousCommit = commit;
+                previous = commit;
             }
 
             commits.sort(Comparator.comparing(GitCommit::getDate));
@@ -124,6 +122,37 @@ public class GitUtils {
             return commits;
         }
         catch (GitAPIException | IOException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public static List<GitCommit> getVersions(Git git, Date start, Date end) {
+        try {
+            final List<GitCommit> commits = new ArrayList<>();
+
+            RevCommit previous = null;
+            for (Ref ref:  git.tagList().call()) {
+                try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+                    final RevCommit commit = revWalk.parseCommit(ref.getObjectId());
+                    final String fullName = ref.getName();
+                    final String name = fullName.replaceFirst("refs/tags/", "");
+
+                    Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
+                    Date commitDate = Date.from(instant);
+
+                    if(isInInterval(commitDate, start, end)){
+                        List<DiffEntry> diffEntries = getDiff(git, previous, commit);
+                        commits.add(new GitCommit(commit.getName(), name, commitDate, diffEntries));
+                    }
+
+                    previous = commit;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return commits;
+        } catch (GitAPIException e) {
             return Collections.emptyList();
         }
     }
@@ -150,11 +179,7 @@ public class GitUtils {
             return false;
         }
 
-        if(endDate != null && endDate.before(date)){
-            return false;
-        }
-
-        return true;
+        return endDate == null || !endDate.before(date);
     }
 
     public static Optional<GitCommit> getMostRecentCommit(Git git, Date date, String branch){
@@ -209,12 +234,11 @@ public class GitUtils {
         return git.branchList().call()
                 .stream()
                 .map(Ref::getName)
-                .collect(Collectors.toSet())
-                .stream().anyMatch(b -> b.endsWith(branch));
+                .anyMatch(b -> b.endsWith(branch));
     }
 
     public static List<GitCommit> filterCommitsByFrequency(List<GitCommit> commits, Frequency frequency) {
-        if(frequency == Frequency.UNIQUE){
+        if(frequency == Frequency.UNIQUE || frequency == Frequency.VERSION){
             return commits;
         }
 

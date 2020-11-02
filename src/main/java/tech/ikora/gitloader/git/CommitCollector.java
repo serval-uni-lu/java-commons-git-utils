@@ -68,12 +68,23 @@ public class CommitCollector {
     }
 
     public List<GitCommit> collect(){
-        List<GitCommit> commits = GitUtils.getCommits(
-                this.git,
-                this.start,
-                this.end,
-                this.branch
-        );
+        List<GitCommit> commits;
+
+        if(frequency == Frequency.VERSION){
+            commits = GitUtils.getVersions(
+                    this.git,
+                    this.start,
+                    this.end
+            );
+        }
+        else{
+            commits = GitUtils.getCommits(
+                    this.git,
+                    this.start,
+                    this.end,
+                    this.branch
+            );
+        }
 
         if(ignored != null && !ignored.isEmpty()){
             commits = commits.stream()

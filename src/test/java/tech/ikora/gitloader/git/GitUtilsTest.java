@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,10 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class GitUtilsTest {
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
     private static Git git2;
+    private static Git git3;
 
     @BeforeAll
     static void setup() {
         git2 = Helpers.setRepository("git-repos/git-2.zip");
+        git3 = Helpers.setRepository("git-repos/git-3.zip");
     }
 
     @Test
@@ -84,8 +87,16 @@ class GitUtilsTest {
         GitUtils.checkout(localRepository1.getGit(), "");
     }
 
+    @Test
+    void testGetVersion() throws GitAPIException, IOException {
+        final LocalRepository localRepository = GitUtils.createLocalRepository(git3);
+        final List<GitCommit> versions = GitUtils.getVersions(localRepository.getGit(), null, null);
+        assertEquals(3, versions.size());
+    }
+
     @AfterAll
     static void teardown(){
         Helpers.deleteRepository(git2);
+        Helpers.deleteRepository(git3);
     }
 }
