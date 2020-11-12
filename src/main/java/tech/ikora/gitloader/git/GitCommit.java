@@ -1,32 +1,29 @@
 package tech.ikora.gitloader.git;
 
-import org.eclipse.jgit.diff.DiffEntry;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 public class GitCommit {
-    private final static GitCommit none = new GitCommit("", Date.from(Instant.EPOCH), Collections.emptyList());
+    private final static GitCommit none = new GitCommit("", Date.from(Instant.EPOCH), Difference.none());
 
     private final String id;
     private final String tag;
     private final Date date;
-    private final List<DiffEntry> diffEntries;
+    private final Difference difference;
 
-    public GitCommit(String id, Date date, List<DiffEntry> diffEntries) {
+    public GitCommit(String id, Date date, Difference difference) {
         this.id = id;
         this.tag = "";
         this.date = date;
-        this.diffEntries = diffEntries;
+        this.difference = difference;
     }
 
-    public GitCommit(String id, String tag, Date date, List<DiffEntry> diffEntries){
+    public GitCommit(String id, String tag, Date date, Difference difference){
         this.id = id;
         this.tag = tag;
         this.date = date;
-        this.diffEntries = diffEntries;
+        this.difference = difference;
     }
 
     public static GitCommit none(){
@@ -45,8 +42,8 @@ public class GitCommit {
         return date;
     }
 
-    public List<DiffEntry> getDiffEntries() {
-        return diffEntries;
+    public Difference getDifference() {
+        return difference;
     }
 
     public boolean isValid(){

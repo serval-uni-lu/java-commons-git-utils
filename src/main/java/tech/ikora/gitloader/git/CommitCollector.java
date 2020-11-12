@@ -115,7 +115,7 @@ public class CommitCollector {
             return true;
         }
 
-        for(DiffEntry diffEntry: commit.getDiffEntries()){
+        for(DiffEntry diffEntry: commit.getDifference().getEntries()){
             if(hasExtension(diffEntry.getOldPath(), extensions)){
                 return true;
             }
@@ -133,7 +133,7 @@ public class CommitCollector {
             return true;
         }
 
-        for(DiffEntry diffEntry: commit.getDiffEntries()){
+        for(DiffEntry diffEntry: commit.getDifference().getEntries()){
             for(String subFolder: subFolders){
                 try {
                     if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())

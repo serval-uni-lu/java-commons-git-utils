@@ -16,13 +16,12 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
-import org.eclipse.jgit.util.io.NullOutputStream;
 import tech.ikora.gitloader.exception.CommitNotFoundException;
 import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -46,11 +45,11 @@ public class GitUtils {
 
             final RevCommit commit = revWalk.parseCommit(head);
             final RevCommit previousCommit = getPreviousCommit(git, commit);
-            final List<DiffEntry> diffEntries = getDiff(git, previousCommit, commit);
+            final Difference difference = getDifference(git, previousCommit, commit);
 
             final File location = git.getRepository().getDirectory().getParentFile();
             final String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen(), diffEntries);
+            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen(), difference);
 
             localRepository = new LocalRepository(git, location, remote, gitCommit);
         }
@@ -110,8 +109,8 @@ public class GitUtils {
                 Date commitDate = Date.from(instant);
 
                 if(isInInterval(commitDate, start, end)){
-                    List<DiffEntry> diffEntries = getDiff(git, previous, commit);
-                    commits.add(new GitCommit(commit.getName(), commitDate, diffEntries));
+                    Difference difference = getDifference(git, previous, commit);
+                    commits.add(new GitCommit(commit.getName(), commitDate, difference));
                 }
 
                 previous = commit;
@@ -141,8 +140,8 @@ public class GitUtils {
                     Date commitDate = Date.from(instant);
 
                     if(isInInterval(commitDate, start, end)){
-                        List<DiffEntry> diffEntries = getDiff(git, previous, commit);
-                        commits.add(new GitCommit(commit.getName(), name, commitDate, diffEntries));
+                        Difference difference = getDifference(git, previous, commit);
+                        commits.add(new GitCommit(commit.getName(), name, commitDate, difference));
                     }
 
                     previous = commit;
@@ -287,15 +286,18 @@ public class GitUtils {
         return null;
     }
 
-    private static List<DiffEntry> getDiff(Git git, RevCommit commit1, RevCommit commit2) throws IOException {
-        AbstractTreeIterator oldTreeIterator = getTreeIterator(git, commit1);
-        AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit2);
+    private static Difference getDifference(Git git, RevCommit commit1, RevCommit commit2) throws IOException, GitAPIException {
+        final AbstractTreeIterator oldTreeIterator = getTreeIterator(git, commit1);
+        final AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit2);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        OutputStream outputStream = NullOutputStream.INSTANCE;
-        try( DiffFormatter formatter = new DiffFormatter( outputStream ) ) {
-            formatter.setRepository( git.getRepository() );
-             return formatter.scan( oldTreeIterator, newTreeIterator );
-        }
+        final List<DiffEntry> entries = git.diff()
+                .setOldTree(oldTreeIterator)
+                .setNewTree(newTreeIterator)
+                .setOutputStream(outputStream)
+                .call();
+
+        return new Difference(entries, outputStream.toString());
     }
 
     private static AbstractTreeIterator getTreeIterator(Git git, RevCommit commit) throws IOException {

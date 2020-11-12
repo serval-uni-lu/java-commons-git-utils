@@ -47,7 +47,8 @@ class GitUtilsTest {
 
         assertEquals(formatter.parse("2016-04-04 13:21:25"), commit.getDate());
         assertEquals("29e929fbc5dc6a2e9c620069b24e2a143af4285f", commit.getId());
-        assertEquals(1, commit.getDiffEntries().size());
+        assertEquals(1, commit.getDifference().getEntries().size());
+        assertFalse(commit.getDifference().getFormatted().isEmpty());
     }
 
     @Test
