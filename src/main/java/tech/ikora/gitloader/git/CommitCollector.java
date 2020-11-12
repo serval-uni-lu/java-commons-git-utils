@@ -70,7 +70,7 @@ public class CommitCollector {
     public List<GitCommit> collect(){
         List<GitCommit> commits;
 
-        if(frequency == Frequency.VERSION){
+        if(frequency == Frequency.RELEASE){
             commits = GitUtils.getVersions(
                     this.git,
                     this.start,

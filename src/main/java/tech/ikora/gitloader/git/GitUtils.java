@@ -5,7 +5,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -237,7 +236,7 @@ public class GitUtils {
     }
 
     public static List<GitCommit> filterCommitsByFrequency(List<GitCommit> commits, Frequency frequency) {
-        if(frequency == Frequency.UNIQUE || frequency == Frequency.VERSION){
+        if(frequency == Frequency.UNIQUE || frequency == Frequency.RELEASE){
             return commits;
         }
 

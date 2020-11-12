@@ -148,7 +148,7 @@ class CommitCollectorTest {
     void testCollectWithFrequencyVersion(){
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git3)
-                .every(Frequency.VERSION)
+                .every(Frequency.RELEASE)
                 .collect();
 
         assertEquals(3, commits.size());

@@ -6,5 +6,5 @@ public enum Frequency {
     WEEKLY,
     MONTHLY,
     YEARLY,
-    VERSION
+    RELEASE
 }
