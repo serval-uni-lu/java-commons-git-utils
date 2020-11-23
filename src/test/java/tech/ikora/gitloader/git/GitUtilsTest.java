@@ -3,6 +3,7 @@ package tech.ikora.gitloader.git;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -93,6 +95,12 @@ class GitUtilsTest {
         final LocalRepository localRepository = GitUtils.createLocalRepository(git3);
         final List<GitCommit> versions = GitUtils.getVersions(localRepository.getGit(), null, null);
         assertEquals(3, versions.size());
+    }
+
+    @Test
+    void testGetCommitDate() throws IOException, InvalidRefNameException, ParseException {
+        final Date date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
+        assertEquals(formatter.parse("2016-04-04 13:21:25"), date);
     }
 
     @AfterAll

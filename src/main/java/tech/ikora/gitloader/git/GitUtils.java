@@ -3,6 +3,7 @@ package tech.ikora.gitloader.git;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Constants;
@@ -48,7 +49,8 @@ public class GitUtils {
 
             final File location = git.getRepository().getDirectory().getParentFile();
             final String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen(), difference);
+            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen());
+            gitCommit.setDifference(difference);
 
             localRepository = new LocalRepository(git, location, remote, gitCommit);
         }
@@ -102,20 +104,17 @@ public class GitUtils {
                 revCommits = git.log().addRange(masterId, branchId).call();
             }
 
-            RevCommit previous = null;
             for (RevCommit commit : revCommits) {
                 Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
                 Date commitDate = Date.from(instant);
 
                 if(isInInterval(commitDate, start, end)){
-                    Difference difference = getDifference(git, previous, commit);
-                    commits.add(new GitCommit(commit.getName(), commitDate, difference));
+                    commits.add(new GitCommit(commit.getName(), commitDate));
                 }
-
-                previous = commit;
             }
 
             commits.sort(Comparator.comparing(GitCommit::getDate));
+            setDifferences(git, commits);
 
             return commits;
         }
@@ -128,7 +127,6 @@ public class GitUtils {
         try {
             final List<GitCommit> commits = new ArrayList<>();
 
-            RevCommit previous = null;
             for (Ref ref:  git.tagList().call()) {
                 try (RevWalk revWalk = new RevWalk(git.getRepository())) {
                     final RevCommit commit = revWalk.parseCommit(ref.getObjectId());
@@ -139,26 +137,48 @@ public class GitUtils {
                     Date commitDate = Date.from(instant);
 
                     if(isInInterval(commitDate, start, end)){
-                        Difference difference = getDifference(git, previous, commit);
-                        commits.add(new GitCommit(commit.getName(), name, commitDate, difference));
+                        commits.add(new GitCommit(commit.getName(), name, commitDate));
                     }
 
-                    previous = commit;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
+            setDifferences(git, commits);
+
             return commits;
-        } catch (GitAPIException e) {
+        } catch (GitAPIException | IOException e) {
             return Collections.emptyList();
         }
     }
 
-    public static Date getCommitDate(Git git, ObjectId commitId) throws IOException {
+    private static RevCommit getRevCommit(Git git, String commitId) throws IOException {
         try(RevWalk revWalk = new RevWalk(git.getRepository())){
-            RevCommit revCommit = revWalk.parseCommit(commitId);
-            return revCommit.getAuthorIdent().getWhen();
+            ObjectId objectId = ObjectId.fromString(commitId);
+            return revWalk.parseCommit(objectId);
+        }
+    }
+
+    public static Date getCommitDate(Git git, String commitId) throws IOException, InvalidRefNameException {
+        final RevCommit revCommit = getRevCommit(git, commitId);
+
+        if(revCommit == null){
+            throw new InvalidRefNameException("Invalid commit ID: " + commitId);
+        }
+
+        return revCommit.getAuthorIdent().getWhen();
+    }
+
+    private static void setDifferences(Git git, List<GitCommit> commits) throws IOException, GitAPIException {
+        RevCommit previous = null;
+        for(GitCommit current: commits){
+            final RevCommit commit = getRevCommit(git, current.getId());
+            final Difference difference = getDifference(git, previous, commit);
+
+            current.setDifference(difference);
+
+            previous = getRevCommit(git, current.getId());
         }
     }
 
@@ -285,9 +305,13 @@ public class GitUtils {
         return null;
     }
 
-    private static Difference getDifference(Git git, RevCommit commit1, RevCommit commit2) throws IOException, GitAPIException {
-        final AbstractTreeIterator oldTreeIterator = getTreeIterator(git, commit1);
-        final AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit2);
+    private static Difference getDifference(Git git, RevCommit previous, RevCommit commit) throws IOException, GitAPIException {
+        if(previous == null || commit == null){
+            return Difference.none();
+        }
+
+        final AbstractTreeIterator oldTreeIterator = getTreeIterator(git, previous);
+        final AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit);
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         final List<DiffEntry> entries = git.diff()

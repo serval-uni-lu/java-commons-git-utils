@@ -101,7 +101,7 @@ class CommitCollectorTest {
                 .forExtensions(Collections.singleton("javax"))
                 .collect();
 
-        assertEquals(2, commits.size());
+        assertEquals(1, commits.size());
     }
 
     @Test
@@ -111,7 +111,7 @@ class CommitCollectorTest {
                 .filterNoChangeIn(Collections.singleton("pasta"))
                 .collect();
 
-        assertEquals(2, commits.size());
+        assertEquals(1, commits.size());
     }
 
     @Test
