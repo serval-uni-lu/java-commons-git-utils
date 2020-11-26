@@ -256,7 +256,7 @@ public class GitUtils {
     }
 
     public static List<GitCommit> filterCommitsByFrequency(List<GitCommit> commits, Frequency frequency) {
-        if(frequency == Frequency.UNIQUE || frequency == Frequency.RELEASE){
+        if(frequency == Frequency.UNIQUE || frequency == Frequency.RELEASE || frequency == Frequency.LATEST){
             return commits;
         }
 

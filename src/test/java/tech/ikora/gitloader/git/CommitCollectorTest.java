@@ -145,6 +145,17 @@ class CommitCollectorTest {
     }
 
     @Test
+    void testCollectWithFrequencyLatest() {
+        final List<GitCommit> commits = new CommitCollector()
+                .forGit(git1)
+                .every(Frequency.LATEST)
+                .collect();
+
+        assertEquals(1, commits.size());
+        assertEquals("e7d13b0511f8a176284ce4f92ed8c6e8d09c77f2", commits.get(0).getId());
+    }
+
+    @Test
     void testCollectWithFrequencyVersion(){
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git3)

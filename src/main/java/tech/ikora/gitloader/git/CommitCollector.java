@@ -97,9 +97,24 @@ public class CommitCollector {
                 .filter(c -> isSubfolderChanged(c, filterNoChangeIn, extensions))
                 .collect(Collectors.toList());
 
+        if(commits.isEmpty()){
+            return commits;
+        }
+
+        return processFrequency(commits);
+    }
+
+    private List<GitCommit> processFrequency(List<GitCommit> commits){
         commits = GitUtils.filterCommitsByFrequency(commits, frequency);
 
-        return limit > 0 ? commits.subList(0, Math.min(commits.size(), limit)) : commits;
+        if(frequency == Frequency.LATEST){
+            commits = commits.subList(commits.size() - 1, commits.size());
+        }
+        else{
+            commits = limit > 0 ? commits.subList(0, Math.min(commits.size(), limit)) : commits;
+        }
+
+        return commits;
     }
 
     private static boolean hasExtension(String path, Set<String> extensions){
