@@ -1,6 +1,5 @@
 package tech.ikora.gitloader.github;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import tech.ikora.gitloader.GitEngine;
 import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 import tech.ikora.gitloader.git.LocalRepository;

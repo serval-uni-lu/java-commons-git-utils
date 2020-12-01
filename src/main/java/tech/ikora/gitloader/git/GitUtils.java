@@ -19,7 +19,6 @@ import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import tech.ikora.gitloader.exception.CommitNotFoundException;
 import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -153,13 +152,6 @@ public class GitUtils {
         }
     }
 
-    private static RevCommit getRevCommit(Git git, String commitId) throws IOException {
-        try(RevWalk revWalk = new RevWalk(git.getRepository())){
-            ObjectId objectId = ObjectId.fromString(commitId);
-            return revWalk.parseCommit(objectId);
-        }
-    }
-
     public static Date getCommitDate(Git git, String commitId) throws IOException, InvalidRefNameException {
         final RevCommit revCommit = getRevCommit(git, commitId);
 
@@ -168,52 +160,6 @@ public class GitUtils {
         }
 
         return revCommit.getAuthorIdent().getWhen();
-    }
-
-    private static void setDifferences(Git git, List<GitCommit> commits) throws IOException, GitAPIException {
-        RevCommit previous = null;
-        for(GitCommit current: commits){
-            final RevCommit commit = getRevCommit(git, current.getId());
-            final Difference difference = getDifference(git, previous, commit);
-
-            current.setDifference(difference);
-
-            previous = getRevCommit(git, current.getId());
-        }
-    }
-
-    private static ObjectId resolveBranch(Git git, String branch) throws GitAPIException {
-            for(Ref ref: git.branchList().call()){
-                if(ref.getName().endsWith(branch)){
-                    return ref.getObjectId();
-                }
-            }
-
-        return null;
-    }
-
-    private static boolean isInInterval(Date date, Date startDate, Date endDate){
-        if(startDate != null && startDate.after(date)){
-            return false;
-        }
-
-        return endDate == null || !endDate.before(date);
-    }
-
-    public static Optional<GitCommit> getMostRecentCommit(Git git, Date date, String branch){
-        GitCommit mostRecentCommit = null;
-
-        List<GitCommit> commits =  getCommits(git, null, date, branch);
-
-        for (GitCommit commit: commits) {
-            if(commit.getDate().after(date)){
-                break;
-            }
-
-            mostRecentCommit = commit;
-        }
-
-        return Optional.ofNullable(mostRecentCommit);
     }
 
     public static Ref checkout(Git git, Date date, String branch) throws CommitNotFoundException, GitAPIException, IOException {
@@ -289,7 +235,60 @@ public class GitUtils {
         return String.format("%s-%s", matcher.group(3), matcher.group(4));
     }
 
-    private static RevCommit getPreviousCommit(Git git, RevCommit commit)  throws  IOException {
+    static RevCommit getRevCommit(Git git, String commitId) throws IOException {
+        try(RevWalk revWalk = new RevWalk(git.getRepository())){
+            ObjectId objectId = ObjectId.fromString(commitId);
+            return revWalk.parseCommit(objectId);
+        }
+    }
+
+    static void setDifferences(Git git, List<GitCommit> commits) throws IOException, GitAPIException {
+        RevCommit previous = null;
+        for(GitCommit current: commits){
+            final RevCommit commit = getRevCommit(git, current.getId());
+            final Difference difference = getDifference(git, previous, commit);
+
+            current.setDifference(difference);
+
+            previous = getRevCommit(git, current.getId());
+        }
+    }
+
+    static ObjectId resolveBranch(Git git, String branch) throws GitAPIException {
+        for(Ref ref: git.branchList().call()){
+            if(ref.getName().endsWith(branch)){
+                return ref.getObjectId();
+            }
+        }
+
+        return null;
+    }
+
+    static boolean isInInterval(Date date, Date startDate, Date endDate){
+        if(startDate != null && startDate.after(date)){
+            return false;
+        }
+
+        return endDate == null || !endDate.before(date);
+    }
+
+    static Optional<GitCommit> getMostRecentCommit(Git git, Date date, String branch){
+        GitCommit mostRecentCommit = null;
+
+        List<GitCommit> commits =  getCommits(git, null, date, branch);
+
+        for (GitCommit commit: commits) {
+            if(commit.getDate().after(date)){
+                break;
+            }
+
+            mostRecentCommit = commit;
+        }
+
+        return Optional.ofNullable(mostRecentCommit);
+    }
+
+    static RevCommit getPreviousCommit(Git git, RevCommit commit)  throws  IOException {
         try (RevWalk walk = new RevWalk(git.getRepository())) {
             walk.markStart(commit);
             int count = 0;
@@ -305,25 +304,23 @@ public class GitUtils {
         return null;
     }
 
-    private static Difference getDifference(Git git, RevCommit previous, RevCommit commit) throws IOException, GitAPIException {
+    static Difference getDifference(Git git, RevCommit previous, RevCommit commit) throws IOException, GitAPIException {
         if(previous == null || commit == null){
             return Difference.none();
         }
 
         final AbstractTreeIterator oldTreeIterator = getTreeIterator(git, previous);
         final AbstractTreeIterator newTreeIterator = getTreeIterator(git, commit);
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         final List<DiffEntry> entries = git.diff()
                 .setOldTree(oldTreeIterator)
                 .setNewTree(newTreeIterator)
-                .setOutputStream(outputStream)
                 .call();
 
-        return new Difference(entries, outputStream.toString());
+        return new Difference(git, entries);
     }
 
-    private static AbstractTreeIterator getTreeIterator(Git git, RevCommit commit) throws IOException {
+    static AbstractTreeIterator getTreeIterator(Git git, RevCommit commit) throws IOException {
         if(commit == null){
             return new EmptyTreeIterator();
         }
@@ -333,7 +330,7 @@ public class GitUtils {
         }
     }
 
-    private static boolean isSameFrequencyBucket(Date date1, Date date2, Frequency frequency) {
+    static boolean isSameFrequencyBucket(Date date1, Date date2, Frequency frequency) {
         if(date1 == null || date2 == null){
             return false;
         }
@@ -348,7 +345,7 @@ public class GitUtils {
         return false;
     }
 
-    private static boolean isSameDay(Date date1, Date date2){
+    static boolean isSameDay(Date date1, Date date2){
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(date1);
@@ -362,7 +359,7 @@ public class GitUtils {
         return day1 == day2 && year1 == year2;
     }
 
-    private static boolean isSameWeek(Date date1, Date date2){
+    static boolean isSameWeek(Date date1, Date date2){
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(date1);
@@ -376,7 +373,7 @@ public class GitUtils {
         return week1 == week2 && year1 == year2;
     }
 
-    private static boolean isSameMonth(Date date1, Date date2){
+    static boolean isSameMonth(Date date1, Date date2){
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(date1);
@@ -390,7 +387,7 @@ public class GitUtils {
         return month1 == month2 && year1 == year2;
     }
 
-    private static boolean isSameYear(Date date1, Date date2){
+    static boolean isSameYear(Date date1, Date date2){
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(date1);

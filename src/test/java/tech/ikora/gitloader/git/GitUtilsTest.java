@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -101,6 +103,30 @@ class GitUtilsTest {
     void testGetCommitDate() throws IOException, InvalidRefNameException, ParseException {
         final Date date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
         assertEquals(formatter.parse("2016-04-04 13:21:25"), date);
+    }
+
+    @Test
+    void testDifference() throws IOException, GitAPIException {
+        final String expectedFormatted = "diff --git a/ATest.java b/ATest.java\n" +
+                "index c2787f9..9f9f890 100644\n" +
+                "--- a/ATest.java\n" +
+                "+++ b/ATest.java\n" +
+                "@@ -1,3 +1,4 @@\n" +
+                " class ATest{\n" +
+                "     \\\\modify\n" +
+                "+    \\\\added a line\n" +
+                " }\n" +
+                "\\ No newline at end of file";
+
+        final RevCommit commit = GitUtils.getRevCommit(git3, "4638730126d40716e230c2040751a13153fb1556");
+        final RevCommit previousCommit = GitUtils.getRevCommit(git3, "f1a90b8d7b151ceefd3e3dfc0dc1d0e12b5f48d0");
+
+        final Difference difference = GitUtils.getDifference(git3, previousCommit, commit);
+        final List<DiffEntry> entries = difference.getEntries();
+        final String formatted = difference.getFormatted();
+
+        assertEquals(1, entries.size());
+        assertEquals(expectedFormatted, formatted);
     }
 
     @AfterAll
