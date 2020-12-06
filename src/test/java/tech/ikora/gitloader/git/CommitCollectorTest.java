@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import tech.ikora.gitloader.Helpers;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -176,6 +177,20 @@ class CommitCollectorTest {
                 .collect();
 
         assertEquals(12, commits.size());
+    }
+
+    @Test
+    void testCherryPick() throws IOException {
+        final List<GitCommit> commits = new CommitCollector()
+                .forGit(git1)
+                .cherryPick(
+                        "71535a31f0b598a5d5fcebda7146ebc01def783a",
+                        "e7d13b0511f8a176284ce4f92ed8c6e8d09c77f2"
+                );
+
+        assertEquals(2, commits.size());
+        assertEquals("71535a31f0b598a5d5fcebda7146ebc01def783a", commits.get(0).getId());
+        assertEquals("e7d13b0511f8a176284ce4f92ed8c6e8d09c77f2", commits.get(1).getId());
     }
 
     @AfterAll

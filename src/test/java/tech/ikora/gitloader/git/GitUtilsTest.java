@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -127,6 +128,19 @@ class GitUtilsTest {
 
         assertEquals(1, entries.size());
         assertEquals(expectedFormatted, formatted);
+    }
+
+    @Test
+    void testCherryPickWhenPresent() throws IOException {
+        final Optional<GitCommit> commit = GitUtils.getCommitById(git3, "4638730126d40716e230c2040751a13153fb1556");
+        assertTrue(commit.isPresent());
+        assertEquals("4638730126d40716e230c2040751a13153fb1556", commit.get().getId());
+    }
+
+    @Test
+    void testCherryPickWheAbsent() throws IOException {
+        final Optional<GitCommit> commit = GitUtils.getCommitById(git3, "12345678912345679");
+        assertFalse(commit.isPresent());
     }
 
     @AfterAll

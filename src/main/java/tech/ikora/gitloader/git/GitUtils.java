@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.errors.InvalidObjectIdException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -87,6 +88,15 @@ public class GitUtils {
         }
 
         return localRepository;
+    }
+
+    public static Optional<GitCommit> getCommitById(Git git, String commitId) throws IOException {
+        try {
+            final RevCommit revCommit = getRevCommit(git, commitId);
+            return Optional.of(new GitCommit(revCommit.getName(), revCommit.getAuthorIdent().getWhen()));
+        } catch (InvalidObjectIdException  e) {
+            return Optional.empty();
+        }
     }
 
     public static List<GitCommit> getCommits(Git git, Date start, Date end, String branch) {

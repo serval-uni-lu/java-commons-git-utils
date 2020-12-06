@@ -5,10 +5,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CommitCollector {
@@ -167,5 +164,15 @@ public class CommitCollector {
         }
 
         return false;
+    }
+
+    public List<GitCommit> cherryPick(String... commitIds) throws IOException {
+        List<GitCommit> commits = new ArrayList<>(commitIds.length);
+
+        for(String commitId: commitIds){
+            GitUtils.getCommitById(git, commitId).ifPresent(commits::add);
+        }
+
+        return commits;
     }
 }
