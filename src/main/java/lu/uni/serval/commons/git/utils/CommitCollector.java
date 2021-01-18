@@ -2,6 +2,7 @@ package lu.uni.serval.commons.git.utils;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class CommitCollector {
     private int limit = 0;
     private Set<String> filterNoChangeIn = Collections.emptySet();
     private Set<String> extensions = Collections.emptySet();
+    private boolean withDifference = true;
 
     public CommitCollector forGit(Git git){
         this.git = git;
@@ -64,7 +66,12 @@ public class CommitCollector {
         return this;
     }
 
-    public List<GitCommit> collect(){
+    public CommitCollector withDifference(boolean withDifference){
+        this.withDifference = withDifference;
+        return this;
+    }
+
+    public List<GitCommit> collect() throws IOException, GitAPIException {
         List<GitCommit> commits;
 
         if(frequency == Frequency.RELEASE){
@@ -89,16 +96,22 @@ public class CommitCollector {
                     .collect(Collectors.toList());
         }
 
-        commits = commits.stream()
-                .filter(c -> isContainExtension(c, extensions))
-                .filter(c -> isSubfolderChanged(c, filterNoChangeIn, extensions))
-                .collect(Collectors.toList());
+        if(!extensions.isEmpty() || !filterNoChangeIn.isEmpty()){
+            GitUtils.setDifferences(git, commits);
+            commits = commits.stream()
+                    .filter(c -> isContainExtension(c, extensions))
+                    .filter(c -> isSubfolderChanged(c, filterNoChangeIn, extensions))
+                    .collect(Collectors.toList());
+        }
 
         if(commits.isEmpty()){
             return commits;
         }
 
-        return processFrequency(commits);
+        commits = processFrequency(commits);
+        finalizeCollection(commits);
+
+        return commits;
     }
 
     private List<GitCommit> processFrequency(List<GitCommit> commits){
@@ -166,13 +179,20 @@ public class CommitCollector {
         return false;
     }
 
-    public List<GitCommit> cherryPick(String... commitIds) throws IOException {
+    public List<GitCommit> cherryPick(String... commitIds) throws IOException, GitAPIException {
         List<GitCommit> commits = new ArrayList<>(commitIds.length);
 
         for(String commitId: commitIds){
             GitUtils.getCommitById(git, commitId).ifPresent(commits::add);
         }
 
+        finalizeCollection(commits);
         return commits;
+    }
+
+    private void finalizeCollection(List<GitCommit> commits) throws IOException, GitAPIException {
+        if(withDifference){
+            GitUtils.setDifferences(git, commits);
+        }
     }
 }

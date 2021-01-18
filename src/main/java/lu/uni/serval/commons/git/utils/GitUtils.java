@@ -123,8 +123,6 @@ public class GitUtils {
             }
 
             commits.sort(Comparator.comparing(GitCommit::getDate));
-            setDifferences(git, commits);
-
             return commits;
         }
         catch (GitAPIException | IOException e) {
@@ -154,10 +152,8 @@ public class GitUtils {
                 }
             }
 
-            setDifferences(git, commits);
-
             return commits;
-        } catch (GitAPIException | IOException e) {
+        } catch (GitAPIException e) {
             return Collections.emptyList();
         }
     }

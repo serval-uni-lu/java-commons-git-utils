@@ -1,6 +1,7 @@
 package lu.uni.serval.commons.git.utils;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithoutFilter(){
+    void testCollectWithoutFilter() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .collect();
@@ -36,7 +37,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithBranch(){
+    void testCollectWithBranch() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .onBranch("b2")
@@ -46,7 +47,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithLimit(){
+    void testCollectWithLimit() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .limit(4)
@@ -56,7 +57,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithLimitTooBig(){
+    void testCollectWithLimitTooBig() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .limit(100)
@@ -66,7 +67,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithLimitTooSmall(){
+    void testCollectWithLimitTooSmall() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .limit(0)
@@ -76,7 +77,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithStartDate() throws ParseException {
+    void testCollectWithStartDate() throws ParseException, IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .from(formatter.parse("2014-11-17"))
@@ -86,7 +87,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithEndDate() throws ParseException {
+    void testCollectWithEndDate() throws ParseException, IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .to(formatter.parse("2014-11-17"))
@@ -96,7 +97,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithExtension() {
+    void testCollectWithExtension() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .forExtensions(Collections.singleton("javax"))
@@ -106,7 +107,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithSubFolder() {
+    void testCollectWithSubFolder() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .filterNoChangeIn(Collections.singleton("pasta"))
@@ -116,7 +117,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithFrequencyDaily() {
+    void testCollectWithFrequencyDaily() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .every(Frequency.DAILY)
@@ -126,7 +127,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithFrequencyYearly() {
+    void testCollectWithFrequencyYearly() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .every(Frequency.YEARLY)
@@ -136,7 +137,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithFrequencyUnique() {
+    void testCollectWithFrequencyUnique() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .every(Frequency.UNIQUE)
@@ -146,7 +147,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithFrequencyLatest() {
+    void testCollectWithFrequencyLatest() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .every(Frequency.LATEST)
@@ -157,7 +158,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithFrequencyVersion(){
+    void testCollectWithFrequencyVersion() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git3)
                 .every(Frequency.RELEASE)
@@ -170,7 +171,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithIgnore() {
+    void testCollectWithIgnore() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .ignoring(Collections.singleton("71535a31f0b598a5d5fcebda7146ebc01def783a"))
@@ -180,7 +181,7 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCherryPick() throws IOException {
+    void testCherryPick() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
                 .cherryPick(
@@ -189,8 +190,12 @@ class CommitCollectorTest {
                 );
 
         assertEquals(2, commits.size());
+
         assertEquals("71535a31f0b598a5d5fcebda7146ebc01def783a", commits.get(0).getId());
         assertEquals("e7d13b0511f8a176284ce4f92ed8c6e8d09c77f2", commits.get(1).getId());
+
+        assertTrue(commits.get(0).getDifference().getFormatted().isEmpty());
+        assertFalse(commits.get(1).getDifference().getFormatted().isEmpty());
     }
 
     @AfterAll
