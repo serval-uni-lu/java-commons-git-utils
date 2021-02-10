@@ -119,10 +119,7 @@ class GitUtilsTest {
                 " }\n" +
                 "\\ No newline at end of file";
 
-        final RevCommit commit = GitUtils.getRevCommit(git3, "4638730126d40716e230c2040751a13153fb1556");
-        final RevCommit previousCommit = GitUtils.getRevCommit(git3, "f1a90b8d7b151ceefd3e3dfc0dc1d0e12b5f48d0");
-
-        final Difference difference = GitUtils.getDifference(git3, previousCommit, commit);
+        final Difference difference = GitUtils.getDifference(git3, "f1a90b8d7b151ceefd3e3dfc0dc1d0e12b5f48d0", "4638730126d40716e230c2040751a13153fb1556");
         final List<DiffEntry> entries = difference.getEntries();
         final String formatted = difference.getFormatted();
 

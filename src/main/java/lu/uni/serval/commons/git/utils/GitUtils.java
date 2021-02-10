@@ -241,6 +241,13 @@ public class GitUtils {
         return String.format("%s-%s", matcher.group(3), matcher.group(4));
     }
 
+    public static Difference getDifference(Git git, String commitId1, String commitId2) throws IOException, GitAPIException {
+        final RevCommit commit1 = GitUtils.getRevCommit(git, commitId1);
+        final RevCommit commit2 = GitUtils.getRevCommit(git, commitId2);
+
+        return getDifference(git, commit1, commit2);
+    }
+
     static RevCommit getRevCommit(Git git, String commitId) throws IOException {
         try(RevWalk revWalk = new RevWalk(git.getRepository())){
             ObjectId objectId = ObjectId.fromString(commitId);
