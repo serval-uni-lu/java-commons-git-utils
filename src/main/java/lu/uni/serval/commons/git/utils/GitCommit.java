@@ -2,24 +2,23 @@ package lu.uni.serval.commons.git.utils;
 
 
 import java.time.Instant;
-import java.util.Date;
 
 public class GitCommit {
-    private final static GitCommit none = new GitCommit("", Date.from(Instant.EPOCH));
+    private final static GitCommit none = new GitCommit("", Instant.EPOCH);
 
     private final String id;
     private final String tag;
-    private final Date date;
+    private final Instant date;
     private Difference difference;
 
-    public GitCommit(String id, Date date) {
+    public GitCommit(String id, Instant date) {
         this.id = id;
         this.tag = "";
         this.date = date;
         this.difference = Difference.none();
     }
 
-    public GitCommit(String id, String tag, Date date){
+    public GitCommit(String id, String tag, Instant date){
         this.id = id;
         this.tag = tag;
         this.date = date;
@@ -38,7 +37,7 @@ public class GitCommit {
         return tag;
     }
 
-    public Date getDate() {
+    public Instant getDate() {
         return date;
     }
 

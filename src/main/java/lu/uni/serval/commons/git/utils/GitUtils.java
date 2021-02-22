@@ -23,11 +23,17 @@ import lu.uni.serval.commons.git.exception.InvalidGitRepositoryException;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GitUtils {
+    private static final Pattern datePattern = Pattern.compile("^\\d\\d\\d\\d-\\d\\d-\\d\\d$");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String EMPTY_BRANCH = "ikora-empty-branch";
     private static final Pattern pattern = Pattern.compile("(https://)?(github\\.com|bitbucket\\.org|gitlab\\.com)/(.*)/(.*)\\.git", Pattern.CASE_INSENSITIVE);
 
@@ -43,13 +49,13 @@ public class GitUtils {
                         git.getRepository().getDirectory()));
             }
 
-            final RevCommit commit = revWalk.parseCommit(head);
-            final RevCommit previousCommit = getPreviousCommit(git, commit);
-            final Difference difference = getDifference(git, previousCommit, commit);
+            final RevCommit revCommit = revWalk.parseCommit(head);
+            final RevCommit previousCommit = getPreviousCommit(git, revCommit);
+            final Difference difference = getDifference(git, previousCommit, revCommit);
 
             final File location = git.getRepository().getDirectory().getParentFile();
             final String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-            final GitCommit gitCommit = new GitCommit(commit.getName(), commit.getAuthorIdent().getWhen());
+            final GitCommit gitCommit = new GitCommit(revCommit.getName(), Instant.ofEpochSecond(revCommit.getCommitTime()));
             gitCommit.setDifference(difference);
 
             localRepository = new LocalRepository(git, location, remote, gitCommit);
@@ -93,13 +99,13 @@ public class GitUtils {
     public static Optional<GitCommit> getCommitById(Git git, String commitId) throws IOException {
         try {
             final RevCommit revCommit = getRevCommit(git, commitId);
-            return Optional.of(new GitCommit(revCommit.getName(), revCommit.getAuthorIdent().getWhen()));
+            return Optional.of(new GitCommit(revCommit.getName(), Instant.ofEpochSecond(revCommit.getCommitTime())));
         } catch (InvalidObjectIdException  e) {
             return Optional.empty();
         }
     }
 
-    public static List<GitCommit> getCommits(Git git, Date start, Date end, String branch) {
+    public static List<GitCommit> getCommits(Git git, Instant start, Instant end, String branch) {
         try {
             final List<GitCommit> commits = new ArrayList<>();
             final Iterable<RevCommit> revCommits;
@@ -113,12 +119,11 @@ public class GitUtils {
                 revCommits = git.log().addRange(masterId, branchId).call();
             }
 
-            for (RevCommit commit : revCommits) {
-                Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
-                Date commitDate = Date.from(instant);
+            for (RevCommit revCommit : revCommits) {
+                final Instant commitDate = Instant.ofEpochSecond(revCommit.getCommitTime());
 
                 if(isInInterval(commitDate, start, end)){
-                    commits.add(new GitCommit(commit.getName(), commitDate));
+                    commits.add(new GitCommit(revCommit.getName(), commitDate));
                 }
             }
 
@@ -130,21 +135,19 @@ public class GitUtils {
         }
     }
 
-    public static List<GitCommit> getVersions(Git git, Date start, Date end) {
+    public static List<GitCommit> getVersions(Git git, Instant start, Instant end) {
         try {
             final List<GitCommit> commits = new ArrayList<>();
 
             for (Ref ref:  git.tagList().call()) {
                 try (RevWalk revWalk = new RevWalk(git.getRepository())) {
-                    final RevCommit commit = revWalk.parseCommit(ref.getObjectId());
+                    final RevCommit revCommit = revWalk.parseCommit(ref.getObjectId());
                     final String fullName = ref.getName();
                     final String name = fullName.replaceFirst("refs/tags/", "");
-
-                    Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
-                    Date commitDate = Date.from(instant);
+                    final Instant commitDate = Instant.ofEpochSecond(revCommit.getCommitTime());
 
                     if(isInInterval(commitDate, start, end)){
-                        commits.add(new GitCommit(commit.getName(), name, commitDate));
+                        commits.add(new GitCommit(revCommit.getName(), name, commitDate));
                     }
 
                 } catch (IOException e) {
@@ -158,17 +161,17 @@ public class GitUtils {
         }
     }
 
-    public static Date getCommitDate(Git git, String commitId) throws IOException, InvalidRefNameException {
+    public static Instant getCommitDate(Git git, String commitId) throws IOException, InvalidRefNameException {
         final RevCommit revCommit = getRevCommit(git, commitId);
 
         if(revCommit == null){
             throw new InvalidRefNameException("Invalid commit ID: " + commitId);
         }
 
-        return revCommit.getAuthorIdent().getWhen();
+        return Instant.ofEpochSecond(revCommit.getCommitTime());
     }
 
-    public static Ref checkout(Git git, Date date, String branch) throws CommitNotFoundException, GitAPIException, IOException {
+    public static Ref checkout(Git git, Instant date, String branch) throws CommitNotFoundException, GitAPIException, IOException {
         final Optional<GitCommit> mostRecentCommit = getMostRecentCommit(git, date, branch);
 
         if(!mostRecentCommit.isPresent()){
@@ -215,10 +218,10 @@ public class GitUtils {
         List<GitCommit> filtered = new ArrayList<>(commits.size());
         ListIterator<GitCommit> iterator = commits.listIterator(commits.size());
 
-        Date previousDate = null;
+        Instant previousDate = null;
         while (iterator.hasPrevious()){
             GitCommit commit = iterator.previous();
-            Date commitDate = commit.getDate();
+            Instant commitDate = commit.getDate();
 
             if(!isSameFrequencyBucket(previousDate, commitDate, frequency)){
                 filtered.add(commit);
@@ -246,6 +249,15 @@ public class GitUtils {
         final RevCommit commit2 = GitUtils.getRevCommit(git, commitId2);
 
         return getDifference(git, commit1, commit2);
+    }
+
+    public static Instant toInstant(String date){
+        Matcher matcher = datePattern.matcher(date);
+        if(matcher.matches()){
+            date += " 00:00:00";
+        }
+
+        return LocalDateTime.parse(date, formatter).toInstant(ZoneOffset.UTC);
     }
 
     static RevCommit getRevCommit(Git git, String commitId) throws IOException {
@@ -277,21 +289,21 @@ public class GitUtils {
         return null;
     }
 
-    static boolean isInInterval(Date date, Date startDate, Date endDate){
-        if(startDate != null && startDate.after(date)){
+    static boolean isInInterval(Instant date, Instant startDate, Instant endDate){
+        if(startDate != null && startDate.compareTo(date) > 0){
             return false;
         }
 
-        return endDate == null || !endDate.before(date);
+        return endDate == null || endDate.compareTo(date) > 0;
     }
 
-    static Optional<GitCommit> getMostRecentCommit(Git git, Date date, String branch){
+    static Optional<GitCommit> getMostRecentCommit(Git git, Instant date, String branch){
         GitCommit mostRecentCommit = null;
 
         List<GitCommit> commits =  getCommits(git, null, date, branch);
 
         for (GitCommit commit: commits) {
-            if(commit.getDate().after(date)){
+            if(commit.getDate().compareTo(date) > 0){
                 break;
             }
 
@@ -343,7 +355,7 @@ public class GitUtils {
         }
     }
 
-    static boolean isSameFrequencyBucket(Date date1, Date date2, Frequency frequency) {
+    static boolean isSameFrequencyBucket(Instant date1, Instant date2, Frequency frequency) {
         if(date1 == null || date2 == null){
             return false;
         }
@@ -358,56 +370,39 @@ public class GitUtils {
         return false;
     }
 
-    static boolean isSameDay(Date date1, Date date2){
-        Calendar calendar = Calendar.getInstance();
+    static boolean isSameDay(Instant date1, Instant date2){
+        int day1 = date1.atOffset(ZoneOffset.UTC).getDayOfYear();
+        int year1 = date1.atOffset(ZoneOffset.UTC).getYear();
 
-        calendar.setTime(date1);
-        int day1 = calendar.get(Calendar.DAY_OF_YEAR);
-        int year1 = calendar.get(Calendar.YEAR);
-
-        calendar.setTime(date2);
-        int day2 = calendar.get(Calendar.DAY_OF_YEAR);
-        int year2 = calendar.get(Calendar.YEAR);
+        int day2 = date2.atOffset(ZoneOffset.UTC).getDayOfYear();
+        int year2 = date2.atOffset(ZoneOffset.UTC).getYear();
 
         return day1 == day2 && year1 == year2;
     }
 
-    static boolean isSameWeek(Date date1, Date date2){
-        Calendar calendar = Calendar.getInstance();
+    static boolean isSameWeek(Instant date1, Instant date2){
+        int week1 = date1.atOffset(ZoneOffset.UTC).get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        int year1 = date1.atOffset(ZoneOffset.UTC).getYear();
 
-        calendar.setTime(date1);
-        int week1 = calendar.get(Calendar.WEEK_OF_YEAR);
-        int year1 = calendar.get(Calendar.YEAR);
-
-        calendar.setTime(date2);
-        int week2 = calendar.get(Calendar.WEEK_OF_YEAR);
-        int year2 = calendar.get(Calendar.YEAR);
+        int week2 = date2.atOffset(ZoneOffset.UTC).get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        int year2 = date2.atOffset(ZoneOffset.UTC).getYear();
 
         return week1 == week2 && year1 == year2;
     }
 
-    static boolean isSameMonth(Date date1, Date date2){
-        Calendar calendar = Calendar.getInstance();
+    static boolean isSameMonth(Instant date1, Instant date2){
+        int month1 = date1.atOffset(ZoneOffset.UTC).getMonthValue();
+        int year1 = date1.atOffset(ZoneOffset.UTC).getYear();
 
-        calendar.setTime(date1);
-        int month1 = calendar.get(Calendar.MONTH);
-        int year1 = calendar.get(Calendar.YEAR);
-
-        calendar.setTime(date2);
-        int month2 = calendar.get(Calendar.MONTH);
-        int year2 = calendar.get(Calendar.YEAR);
+        int month2 = date2.atOffset(ZoneOffset.UTC).getMonthValue();
+        int year2 = date2.atOffset(ZoneOffset.UTC).getYear();
 
         return month1 == month2 && year1 == year2;
     }
 
-    static boolean isSameYear(Date date1, Date date2){
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(date1);
-        int year1 = calendar.get(Calendar.YEAR);
-
-        calendar.setTime(date2);
-        int year2 = calendar.get(Calendar.YEAR);
+    static boolean isSameYear(Instant date1, Instant date2){
+        int year1 = date1.atOffset(ZoneOffset.UTC).getYear();
+        int year2 = date2.atOffset(ZoneOffset.UTC).getYear();
 
         return year1 == year2;
     }

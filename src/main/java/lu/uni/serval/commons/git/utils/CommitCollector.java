@@ -6,13 +6,14 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class CommitCollector {
     private Git git;
-    private Date start;
-    private Date end;
+    private Instant start;
+    private Instant end;
     private String branch = "master";
     private Set<String> ignored = Collections.emptySet();
     private Frequency frequency = Frequency.UNIQUE;
@@ -31,12 +32,12 @@ public class CommitCollector {
         return this;
     }
 
-    public CommitCollector from(Date start){
+    public CommitCollector from(Instant start){
         this.start = start;
         return this;
     }
 
-    public CommitCollector to(Date end){
+    public CommitCollector to(Instant end){
         this.end = end;
         return this;
     }

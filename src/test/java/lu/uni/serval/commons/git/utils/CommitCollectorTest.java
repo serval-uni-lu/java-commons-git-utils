@@ -10,6 +10,7 @@ import lu.uni.serval.commons.git.Helpers;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +18,6 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommitCollectorTest {
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     private static Git git1;
     private static Git git3;
 
@@ -80,7 +80,7 @@ class CommitCollectorTest {
     void testCollectWithStartDate() throws ParseException, IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
-                .from(formatter.parse("2014-11-17"))
+                .from(GitUtils.toInstant("2014-11-17"))
                 .collect();
 
         assertEquals(4, commits.size());
@@ -90,7 +90,7 @@ class CommitCollectorTest {
     void testCollectWithEndDate() throws ParseException, IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
-                .to(formatter.parse("2014-11-17"))
+                .to(GitUtils.toInstant("2014-11-17"))
                 .collect();
 
         assertEquals(9, commits.size());

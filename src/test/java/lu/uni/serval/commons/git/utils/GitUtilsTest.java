@@ -5,7 +5,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,16 +14,16 @@ import lu.uni.serval.commons.git.exception.InvalidGitRepositoryException;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GitUtilsTest {
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
     private static Git git2;
     private static Git git3;
 
@@ -35,7 +34,7 @@ class GitUtilsTest {
     }
 
     @Test
-    void testCreateLocalRepository() throws GitAPIException, IOException, ParseException {
+    void testCreateLocalRepository() throws GitAPIException, IOException {
         final LocalRepository localRepository = GitUtils.createLocalRepository(git2);
 
         assertEquals(git2.getRepository().getDirectory().getParentFile(), localRepository.getLocation());
@@ -43,14 +42,14 @@ class GitUtilsTest {
 
         final GitCommit commit = localRepository.getGitCommit();
 
-        assertEquals(formatter.parse("2016-04-04 13:21:25"), commit.getDate());
+        assertEquals(GitUtils.toInstant("2016-04-04 11:21:25"), commit.getDate());
     }
 
     @Test
-    void testCreateLocalRepositoryGetHeadCommit() throws GitAPIException, IOException, ParseException {
+    void testCreateLocalRepositoryGetHeadCommit() throws GitAPIException, IOException {
         final GitCommit commit = GitUtils.createLocalRepository(git2).getGitCommit();
 
-        assertEquals(formatter.parse("2016-04-04 13:21:25"), commit.getDate());
+        assertEquals(GitUtils.toInstant("2016-04-04 11:21:25"), commit.getDate());
         assertEquals("29e929fbc5dc6a2e9c620069b24e2a143af4285f", commit.getId());
         assertEquals(1, commit.getDifference().getEntries().size());
         assertFalse(commit.getDifference().getFormatted().isEmpty());
@@ -102,8 +101,8 @@ class GitUtilsTest {
 
     @Test
     void testGetCommitDate() throws IOException, InvalidRefNameException, ParseException {
-        final Date date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
-        assertEquals(formatter.parse("2016-04-04 13:21:25"), date);
+        final Instant date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
+        assertEquals(GitUtils.toInstant("2016-04-04 11:21:25"), date);
     }
 
     @Test
