@@ -85,6 +85,12 @@ public class Project {
     private boolean packages_enabled;
     private boolean service_desk_enabled;
     private String service_desk_address;
+    private String operations_access_level;
+    private String analytics_access_level;
+    private boolean ci_forward_deployment_enabled;
+    private boolean restrict_user_defined_variables;
+    private boolean requirements_enabled;
+    private boolean security_and_compliance_enabled;
 
     @JsonGetter("id")
     public int getId() {
@@ -828,12 +834,72 @@ public class Project {
     }
 
     @JsonGetter("service_desk_address")
-    public String isServiceDeskAddress(){
+    public String setServiceDeskAddress(){
         return service_desk_address;
     }
 
     @JsonSetter("service_desk_address")
     public void setServiceDeskAddress(String service_desk_address){
         this.service_desk_address = service_desk_address;
+    }
+
+    @JsonGetter("operations_access_level")
+    public String getOperationsAccessLevel(){
+        return operations_access_level;
+    }
+
+    @JsonSetter("operations_access_level")
+    public void setOperationsAccessLevel(String operations_access_level){
+        this.operations_access_level = operations_access_level;
+    }
+
+    @JsonGetter("analytics_access_level")
+    public String getAnalyticsAccessLevel(){
+        return analytics_access_level;
+    }
+
+    @JsonSetter("analytics_access_level")
+    public void setAnalyticsAccessLevel(String analytics_access_level){
+        this.analytics_access_level = analytics_access_level;
+    }
+
+    @JsonGetter("ci_forward_deployment_enabled")
+    public boolean isCiForwardDeploymentEnabled(){
+        return ci_forward_deployment_enabled;
+    }
+
+    @JsonSetter("ci_forward_deployment_enabled")
+    public void setCiForwardDeploymentEnabled(boolean ci_forward_deployment_enabled){
+        this.ci_forward_deployment_enabled = ci_forward_deployment_enabled;
+    }
+
+    @JsonGetter("restrict_user_defined_variables")
+    public boolean isRestrictUserDefinedVariables(){
+        return restrict_user_defined_variables;
+    }
+
+    @JsonSetter("restrict_user_defined_variables")
+    public void setRestrictUserDefinedVariables(boolean restrict_user_defined_variables){
+        this.restrict_user_defined_variables = restrict_user_defined_variables;
+    }
+
+    @JsonGetter("requirements_enabled")
+    public boolean isRequirementsEnabled(){
+        return requirements_enabled;
+    }
+
+    @JsonSetter("requirements_enabled")
+    public void setRequirementsEnabled(boolean requirements_enabled){
+        this.requirements_enabled = requirements_enabled;
+    }
+
+    @JsonGetter("security_and_compliance_enabled")
+    public boolean isSecurityAndComplianceEnabled(){
+        return security_and_compliance_enabled;
+    }
+
+    @JsonSetter("security_and_compliance_enabled")
+    public void setSecurityAndComplianceEnabled(boolean security_and_compliance_enabled){
+        this.security_and_compliance_enabled = security_and_compliance_enabled;
     }
 }
