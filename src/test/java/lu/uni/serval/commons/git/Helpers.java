@@ -1,5 +1,6 @@
 package lu.uni.serval.commons.git;
 
+import lu.uni.serval.commons.git.utils.GitUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
@@ -86,9 +87,7 @@ public class Helpers {
     public static void deleteRepository(Git git){
 
         try {
-            final File directory = git.getRepository().getDirectory();
-            git.getRepository().close();
-            FileUtils.forceDelete(directory);
+            GitUtils.close(git, true);
         } catch (IOException e) {
             fail(String.format("Failed to delete working git repository [%s]: %s",
                     git.getRepository().getDirectory().getAbsolutePath(), e.getMessage()));

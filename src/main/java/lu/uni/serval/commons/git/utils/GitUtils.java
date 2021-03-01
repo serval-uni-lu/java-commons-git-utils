@@ -2,6 +2,7 @@ package lu.uni.serval.commons.git.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
@@ -13,6 +14,7 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -67,7 +69,7 @@ public class GitUtils {
     public static LocalRepository loadCurrentRepository(String url, String token, File localFolder, String branch)
             throws IOException, InvalidGitRepositoryException {
         if(localFolder.exists()){
-            FileUtils.deleteDirectory(localFolder);
+            FileUtils.forceDelete(localFolder);
         }
 
         LocalRepository localRepository;
@@ -196,6 +198,11 @@ public class GitUtils {
             return ref;
         }
 
+        if(git.diff().call().size() > 0){
+            git.clean().call();
+            git.reset().setMode(ResetCommand.ResetType.HARD).call();
+        }
+
         return git.checkout()
             .setCreateBranch(!isBranchExist(git, commitId))
             .setName(commitId)
@@ -258,6 +265,19 @@ public class GitUtils {
         }
 
         return LocalDateTime.parse(date, formatter).toInstant(ZoneOffset.UTC);
+    }
+
+    public static void close(Git git, boolean deleteLocalFolder) throws IOException {
+        final File directory = git.getRepository().getDirectory();
+
+        git.close();
+
+        WindowCacheConfig config = new WindowCacheConfig();
+        config.install();
+
+        if(deleteLocalFolder && directory.exists()){
+            FileUtils.forceDelete(directory);
+        }
     }
 
     static RevCommit getRevCommit(Git git, String commitId) throws IOException {

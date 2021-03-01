@@ -12,12 +12,10 @@ import lu.uni.serval.commons.git.Helpers;
 import lu.uni.serval.commons.git.exception.InvalidGitRepositoryException;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,7 +80,10 @@ class GitUtilsTest {
     void testCreateLocalRepositoryAfterInvalidCommit() throws GitAPIException, IOException {
         final LocalRepository localRepository1 = GitUtils.createLocalRepository(git2);
         GitUtils.checkout(localRepository1.getGit(), "");
-        final LocalRepository localRepository2 = GitUtils.createLocalRepository(git2);
+        GitUtils.createLocalRepository(git2);
+
+        //make sure no exception is thrown
+        assertTrue(true);
     }
 
     @Test
@@ -90,6 +91,9 @@ class GitUtilsTest {
         final LocalRepository localRepository1 = GitUtils.createLocalRepository(git2);
         GitUtils.checkout(localRepository1.getGit(), "");
         GitUtils.checkout(localRepository1.getGit(), "");
+
+        //make sure no exception is thrown
+        assertTrue(true);
     }
 
     @Test
@@ -124,6 +128,20 @@ class GitUtilsTest {
 
         assertEquals(1, entries.size());
         assertEquals(expectedFormatted, formatted);
+    }
+
+    @Test
+    void testCheckoutAfterChanges() throws GitAPIException, IOException {
+        final LocalRepository localRepository = GitUtils.createLocalRepository(git3);
+        GitUtils.checkout(localRepository.getGit(), "f1a90b8d7b151ceefd3e3dfc0dc1d0e12b5f48d0");
+
+        File file = new File(localRepository.getLocation(), "ATest.java");
+
+        try(FileOutputStream fos = new FileOutputStream(file, true)){
+            fos.write("Spain\r\n".getBytes());
+        }
+
+        GitUtils.checkout(localRepository.getGit(), "4638730126d40716e230c2040751a13153fb1556");
     }
 
     @Test
