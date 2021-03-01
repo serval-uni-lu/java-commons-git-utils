@@ -1,6 +1,5 @@
 package lu.uni.serval.commons.git.utils;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -20,23 +19,22 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 import lu.uni.serval.commons.git.exception.CommitNotFoundException;
 import lu.uni.serval.commons.git.exception.InvalidGitRepositoryException;
+import org.eclipse.jgit.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.IsoFields;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GitUtils {
-    private static final Pattern datePattern = Pattern.compile("^\\d\\d\\d\\d-\\d\\d-\\d\\d$");
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String EMPTY_BRANCH = "ikora-empty-branch";
     private static final Pattern pattern = Pattern.compile("(https://)?(github\\.com|bitbucket\\.org|gitlab\\.com)/(.*)/(.*)\\.git", Pattern.CASE_INSENSITIVE);
+
+    private GitUtils() {}
 
     public static LocalRepository createLocalRepository(Git git) throws GitAPIException, IOException {
         LocalRepository localRepository;
@@ -68,7 +66,7 @@ public class GitUtils {
     public static LocalRepository loadCurrentRepository(String url, String token, File localFolder, String branch)
             throws IOException, InvalidGitRepositoryException {
         if(localFolder.exists()){
-            FileUtils.forceDelete(localFolder);
+            FileUtils.delete(localFolder, FileUtils.RECURSIVE);
         }
 
         LocalRepository localRepository;
@@ -179,7 +177,7 @@ public class GitUtils {
                     .call();
 
             git.rm().addFilepattern("*").call();
-            FileUtils.forceDelete(new File(git.getRepository().getDirectory(), "index"));
+            FileUtils.delete(new File(git.getRepository().getDirectory(), "index"), FileUtils.RECURSIVE);
             git.clean().setForce(true).setCleanDirectories(true).call();
 
             return ref;
@@ -243,15 +241,6 @@ public class GitUtils {
         return getDifference(git, commit1, commit2);
     }
 
-    public static Instant toInstant(String date){
-        Matcher matcher = datePattern.matcher(date);
-        if(matcher.matches()){
-            date += " 00:00:00";
-        }
-
-        return LocalDateTime.parse(date, formatter).toInstant(ZoneOffset.UTC);
-    }
-
     public static void close(Git git, boolean deleteLocalFolder) throws IOException {
         final File directory = git.getRepository().getDirectory();
 
@@ -261,7 +250,7 @@ public class GitUtils {
         config.install();
 
         if(deleteLocalFolder && directory.exists()){
-            FileUtils.forceDelete(directory);
+            FileUtils.delete(directory, FileUtils.RECURSIVE);
         }
     }
 
@@ -295,11 +284,11 @@ public class GitUtils {
     }
 
     static boolean isInInterval(Instant date, Instant startDate, Instant endDate){
-        if(startDate != null && startDate.compareTo(date) > 0){
+        if(startDate != null && startDate.isAfter(date)){
             return false;
         }
 
-        return endDate == null || endDate.compareTo(date) > 0;
+        return endDate == null || endDate.isAfter(date);
     }
 
     static Optional<GitCommit> getMostRecentCommit(Git git, Instant date, String branch){
@@ -308,7 +297,7 @@ public class GitUtils {
         List<GitCommit> commits =  getCommits(git, null, date, branch);
 
         for (GitCommit commit: commits) {
-            if(commit.getDate().compareTo(date) > 0){
+            if(commit.getDate().isAfter(date)){
                 break;
             }
 

@@ -1,10 +1,13 @@
 package lu.uni.serval.commons.git.utils;
 
+import lu.uni.serval.commons.git.exception.CommitNotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +17,6 @@ import lu.uni.serval.commons.git.exception.InvalidGitRepositoryException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -40,14 +42,14 @@ class GitUtilsTest {
 
         final GitCommit commit = localRepository.getGitCommit();
 
-        assertEquals(GitUtils.toInstant("2016-04-04 11:21:25"), commit.getDate());
+        assertEquals(TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:25Z"), commit.getDate());
     }
 
     @Test
     void testCreateLocalRepositoryGetHeadCommit() throws GitAPIException, IOException {
         final GitCommit commit = GitUtils.createLocalRepository(git2).getGitCommit();
 
-        assertEquals(GitUtils.toInstant("2016-04-04 11:21:25"), commit.getDate());
+        assertEquals(TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:25Z"), commit.getDate());
         assertEquals("29e929fbc5dc6a2e9c620069b24e2a143af4285f", commit.getId());
         assertEquals(1, commit.getDifference().getEntries().size());
         assertFalse(commit.getDifference().getFormatted().isEmpty());
@@ -74,6 +76,27 @@ class GitUtilsTest {
 
         GitUtils.checkout(localRepository.getGit(), "");
         assertEquals(0, FileUtils.listFiles(directory, extensions, true).size());
+    }
+
+    @Test
+    void testCheckoutByDate() throws IOException, GitAPIException, CommitNotFoundException {
+        final Ref ref = GitUtils.checkout(git2, TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:10Z"), "master");
+
+        try(RevWalk revWalk = new RevWalk(git2.getRepository())){
+            final RevCommit commit = revWalk.parseCommit(ref.getObjectId());
+            assertEquals("8169f76a3d7add54b4fc7bca7160d1f1eede6eda", commit.getName());
+        }
+    }
+
+    @Test
+    void testCheckoutByDateTooEarly() throws IOException, GitAPIException {
+        try{
+            GitUtils.checkout(git2, TimeUtils.fromIsoDateTimeString("2016-03-04T11:21:10Z"), "master");
+            fail("Should raise a CommitNotFoundException");
+        }
+        catch (CommitNotFoundException e){
+            assertTrue(e.getMessage().contains("016-03-04T11:21:10Z"));
+        }
     }
 
     @Test
@@ -104,9 +127,9 @@ class GitUtilsTest {
     }
 
     @Test
-    void testGetCommitDate() throws IOException, InvalidRefNameException, ParseException {
+    void testGetCommitDate() throws IOException {
         final Instant date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
-        assertEquals(GitUtils.toInstant("2016-04-04 11:21:25"), date);
+        assertEquals(TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:25Z"), date);
     }
 
     @Test

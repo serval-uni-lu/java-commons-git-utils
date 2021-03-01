@@ -110,7 +110,7 @@ public class User {
 
     @JsonGetter("created_at")
     public String getCreationDateAsString(){
-        return TimeUtils.toDateTimeString(creationDate);
+        return TimeUtils.toIsoDateTimeString(creationDate);
     }
 
     public Instant getCreationDate() {
@@ -119,7 +119,7 @@ public class User {
 
     @JsonSetter("created_at")
     public void setCreationDate(String creationDate) {
-        setCreationDate(TimeUtils.fromDateTimeString(creationDate));
+        setCreationDate(TimeUtils.fromIsoDateTimeString(creationDate));
     }
 
     public void setCreationDate(Instant creationDate) {
@@ -208,7 +208,7 @@ public class User {
 
     @JsonGetter("last_sign_in_at")
     public String getLastSignInDateAsString(){
-        return TimeUtils.toDateTimeString(lastSignInDate);
+        return TimeUtils.toIsoDateTimeString(lastSignInDate);
     }
 
     public Instant getLastSignInDate() {
@@ -217,7 +217,7 @@ public class User {
 
     @JsonSetter("last_sign_in_at")
     public void setLastSignInDate(String lastSignInDate) {
-        setLastSignInDate(TimeUtils.fromDateTimeString(lastSignInDate));
+        setLastSignInDate(TimeUtils.fromIsoDateTimeString(lastSignInDate));
     }
 
     public void setLastSignInDate(Instant lastSignInDate) {
@@ -226,7 +226,7 @@ public class User {
 
     @JsonGetter("confirmed_at")
     public String getConfirmedDateAsString(){
-        return TimeUtils.toDateString(confirmedDate);
+        return TimeUtils.toIsoDateString(confirmedDate);
     }
 
     public Instant getConfirmedDate() {
@@ -235,7 +235,7 @@ public class User {
 
     @JsonSetter("confirmed_at")
     public void setConfirmedDate(String confirmedDate) {
-        setConfirmedDate(TimeUtils.fromDateTimeString(confirmedDate));
+        setConfirmedDate(TimeUtils.fromIsoDateTimeString(confirmedDate));
     }
 
     public void setConfirmedDate(Instant confirmedDate) {
@@ -254,7 +254,7 @@ public class User {
 
     @JsonSetter("last_activity_on")
     public String getLastActivityDateAsString(){
-        return TimeUtils.toDateString(lastActivityDate);
+        return TimeUtils.toIsoDateString(lastActivityDate);
     }
     public Instant getLastActivityDate() {
         return lastActivityDate;
@@ -262,8 +262,7 @@ public class User {
 
     @JsonSetter("last_activity_on")
     public void setLastActivityDate(String lastActivityDate) {
-        System.out.println(lastActivityDate);
-        setLastActivityDate(TimeUtils.fromDateString(lastActivityDate));
+        setLastActivityDate(TimeUtils.fromIsoDateString(lastActivityDate));
     }
 
     public void setLastActivityDate(Instant lastActivityDate) {
@@ -292,7 +291,7 @@ public class User {
 
     @JsonGetter("current_sign_in_at")
     public String getCurrentSignInDateAsString(){
-        return TimeUtils.toDateTimeString(currentSignInDate);
+        return TimeUtils.toIsoDateTimeString(currentSignInDate);
     }
 
     public Instant getCurrentSignInDate() {
@@ -301,7 +300,7 @@ public class User {
 
     @JsonSetter("current_sign_in_at")
     public void setCurrentSignInDate(String currentSignInDate)  {
-        setCurrentSignInDate(TimeUtils.fromDateTimeString(currentSignInDate));
+        setCurrentSignInDate(TimeUtils.fromIsoDateTimeString(currentSignInDate));
     }
 
     public void setCurrentSignInDate(Instant currentSignInDate) {

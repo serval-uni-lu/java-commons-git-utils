@@ -77,20 +77,20 @@ class CommitCollectorTest {
     }
 
     @Test
-    void testCollectWithStartDate() throws ParseException, IOException, GitAPIException {
+    void testCollectWithStartDate() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
-                .from(GitUtils.toInstant("2014-11-17"))
+                .from(TimeUtils.fromIsoDateString("2014-11-17"))
                 .collect();
 
         assertEquals(4, commits.size());
     }
 
     @Test
-    void testCollectWithEndDate() throws ParseException, IOException, GitAPIException {
+    void testCollectWithEndDate() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
-                .to(GitUtils.toInstant("2014-11-17"))
+                .to(TimeUtils.fromIsoDateString("2014-11-17"))
                 .collect();
 
         assertEquals(9, commits.size());
