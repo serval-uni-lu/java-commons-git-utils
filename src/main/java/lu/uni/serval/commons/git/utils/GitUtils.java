@@ -185,10 +185,8 @@ public class GitUtils {
             return ref;
         }
 
-        if(git.diff().call().size() > 0){
-            git.clean().call();
-            git.reset().setMode(ResetCommand.ResetType.HARD).call();
-        }
+        git.clean().call();
+        git.reset().setMode(ResetCommand.ResetType.HARD).call();
 
         return git.checkout()
             .setCreateBranch(!isBranchExist(git, commitId))
