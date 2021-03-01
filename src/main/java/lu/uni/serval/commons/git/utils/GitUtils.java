@@ -137,30 +137,23 @@ public class GitUtils {
         }
     }
 
-    public static List<GitCommit> getVersions(Git git, Instant start, Instant end) {
-        try {
-            final List<GitCommit> commits = new ArrayList<>();
+    public static List<GitCommit> getTags(Git git, Instant start, Instant end) throws GitAPIException, IOException {
+        final List<GitCommit> commits = new ArrayList<>();
 
-            for (Ref ref:  git.tagList().call()) {
-                try (RevWalk revWalk = new RevWalk(git.getRepository())) {
-                    final RevCommit revCommit = revWalk.parseCommit(ref.getObjectId());
-                    final String fullName = ref.getName();
-                    final String name = fullName.replaceFirst("refs/tags/", "");
-                    final Instant commitDate = Instant.ofEpochSecond(revCommit.getCommitTime());
+        for (Ref ref:  git.tagList().call()) {
+            try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+                final RevCommit revCommit = revWalk.parseCommit(ref.getObjectId());
+                final String fullName = ref.getName();
+                final String name = fullName.replaceFirst("refs/tags/", "");
+                final Instant commitDate = Instant.ofEpochSecond(revCommit.getCommitTime());
 
-                    if(isInInterval(commitDate, start, end)){
-                        commits.add(new GitCommit(revCommit.getName(), name, commitDate));
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(isInInterval(commitDate, start, end)){
+                    commits.add(new GitCommit(revCommit.getName(), name, commitDate));
                 }
             }
-
-            return commits;
-        } catch (GitAPIException e) {
-            return Collections.emptyList();
         }
+
+        return commits;
     }
 
     public static Instant getCommitDate(Git git, String commitId) throws IOException, InvalidRefNameException {

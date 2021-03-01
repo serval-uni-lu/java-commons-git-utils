@@ -99,7 +99,7 @@ class GitUtilsTest {
     @Test
     void testGetVersion() throws GitAPIException, IOException {
         final LocalRepository localRepository = GitUtils.createLocalRepository(git3);
-        final List<GitCommit> versions = GitUtils.getVersions(localRepository.getGit(), null, null);
+        final List<GitCommit> versions = GitUtils.getTags(localRepository.getGit(), null, null);
         assertEquals(3, versions.size());
     }
 

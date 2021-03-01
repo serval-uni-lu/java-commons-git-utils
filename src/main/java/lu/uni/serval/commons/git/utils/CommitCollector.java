@@ -76,7 +76,7 @@ public class CommitCollector {
         List<GitCommit> commits;
 
         if(frequency == Frequency.RELEASE){
-            commits = GitUtils.getVersions(
+            commits = GitUtils.getTags(
                     this.git,
                     this.start,
                     this.end
