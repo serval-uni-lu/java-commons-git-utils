@@ -52,6 +52,7 @@ class UserTest {
         String json = getSingleUser();
 
         ObjectMapper mapper = new ObjectMapper();
+
         JavaType javaType = mapper.getTypeFactory().constructType(User.class);
         final User user = mapper.readValue(json, javaType);
 

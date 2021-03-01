@@ -2,10 +2,9 @@ package lu.uni.serval.commons.git.api.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import lu.uni.serval.commons.git.utils.TimeUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
 public class User {
@@ -16,7 +15,7 @@ public class User {
     private String state;
     private String avatarUrl;
     private String webUrl;
-    private Date creationDate;
+    private Instant creationDate;
     private boolean admin;
     private String bio;
     private String location;
@@ -25,22 +24,19 @@ public class User {
     private String twitter;
     private String websiteUrl;
     private String organization;
-    private Date lastSignInDate;
-    private Date confirmedDate;
+    private Instant lastSignInDate;
+    private Instant confirmedDate;
     private int themeId;
-    private Date lastActivityDate;
+    private Instant lastActivityDate;
     private int colorSchemeId;
     private int projectsLimit;
-    private Date currentSignInDate;
+    private Instant currentSignInDate;
     private Set<Identity> identities;
     private boolean canCreateGroup;
     private boolean canCreateProject;
     private boolean twoFactorEnabled;
     private boolean external;
     private boolean privateProfile;
-
-    private static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    private static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @JsonGetter("id")
     public int getId() {
@@ -114,20 +110,19 @@ public class User {
 
     @JsonGetter("created_at")
     public String getCreationDateAsString(){
-        return dateTimeFormatter.format(creationDate);
+        return TimeUtils.toDateTimeString(creationDate);
     }
 
-    public Date getCreationDate() {
+    public Instant getCreationDate() {
         return creationDate;
     }
 
     @JsonSetter("created_at")
-    public void setCreationDate(String creationDate) throws ParseException {
-        setCreationDate(dateTimeFormatter.parse(creationDate));
+    public void setCreationDate(String creationDate) {
+        setCreationDate(TimeUtils.fromDateTimeString(creationDate));
     }
 
-    @JsonGetter("created_at")
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(Instant creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -213,36 +208,37 @@ public class User {
 
     @JsonGetter("last_sign_in_at")
     public String getLastSignInDateAsString(){
-        return dateTimeFormatter.format(lastSignInDate);
+        return TimeUtils.toDateTimeString(lastSignInDate);
     }
-    public Date getLastSignInDate() {
+
+    public Instant getLastSignInDate() {
         return lastSignInDate;
     }
 
     @JsonSetter("last_sign_in_at")
-    public void setLastSignInDate(String lastSignInDate) throws ParseException {
-        setLastSignInDate(dateTimeFormatter.parse(lastSignInDate));
+    public void setLastSignInDate(String lastSignInDate) {
+        setLastSignInDate(TimeUtils.fromDateTimeString(lastSignInDate));
     }
 
-    public void setLastSignInDate(Date lastSignInDate) {
+    public void setLastSignInDate(Instant lastSignInDate) {
         this.lastSignInDate = lastSignInDate;
     }
 
     @JsonGetter("confirmed_at")
     public String getConfirmedDateAsString(){
-        return dateTimeFormatter.format(confirmedDate);
+        return TimeUtils.toDateString(confirmedDate);
     }
 
-    public Date getConfirmedDate() {
+    public Instant getConfirmedDate() {
         return confirmedDate;
     }
 
     @JsonSetter("confirmed_at")
-    public void setConfirmedDate(String confirmedDate) throws ParseException {
-        setConfirmedDate(dateTimeFormatter.parse(confirmedDate));
+    public void setConfirmedDate(String confirmedDate) {
+        setConfirmedDate(TimeUtils.fromDateTimeString(confirmedDate));
     }
 
-    public void setConfirmedDate(Date confirmedDate) {
+    public void setConfirmedDate(Instant confirmedDate) {
         this.confirmedDate = confirmedDate;
     }
 
@@ -258,18 +254,19 @@ public class User {
 
     @JsonSetter("last_activity_on")
     public String getLastActivityDateAsString(){
-        return dateFormatter.format(lastActivityDate);
+        return TimeUtils.toDateString(lastActivityDate);
     }
-    public Date getLastActivityDate() {
+    public Instant getLastActivityDate() {
         return lastActivityDate;
     }
 
     @JsonSetter("last_activity_on")
-    public void setLastActivityDate(String lastActivityDate) throws ParseException {
-        setLastActivityDate(dateFormatter.parse(lastActivityDate));
+    public void setLastActivityDate(String lastActivityDate) {
+        System.out.println(lastActivityDate);
+        setLastActivityDate(TimeUtils.fromDateString(lastActivityDate));
     }
 
-    public void setLastActivityDate(Date lastActivityDate) {
+    public void setLastActivityDate(Instant lastActivityDate) {
         this.lastActivityDate = lastActivityDate;
     }
 
@@ -295,19 +292,19 @@ public class User {
 
     @JsonGetter("current_sign_in_at")
     public String getCurrentSignInDateAsString(){
-        return dateTimeFormatter.format(currentSignInDate);
+        return TimeUtils.toDateTimeString(currentSignInDate);
     }
 
-    public Date getCurrentSignInDate() {
+    public Instant getCurrentSignInDate() {
         return currentSignInDate;
     }
 
     @JsonSetter("current_sign_in_at")
-    public void setCurrentSignInDate(String currentSignInDate) throws ParseException {
-        setCurrentSignInDate(dateTimeFormatter.parse(currentSignInDate));
+    public void setCurrentSignInDate(String currentSignInDate)  {
+        setCurrentSignInDate(TimeUtils.fromDateTimeString(currentSignInDate));
     }
 
-    public void setCurrentSignInDate(Date currentSignInDate) {
+    public void setCurrentSignInDate(Instant currentSignInDate) {
         this.currentSignInDate = currentSignInDate;
     }
 
