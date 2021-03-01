@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.InvalidObjectIdException;
@@ -156,13 +155,8 @@ public class GitUtils {
         return commits;
     }
 
-    public static Instant getCommitDate(Git git, String commitId) throws IOException, InvalidRefNameException {
+    public static Instant getCommitDate(Git git, String commitId) throws IOException {
         final RevCommit revCommit = getRevCommit(git, commitId);
-
-        if(revCommit == null){
-            throw new InvalidRefNameException("Invalid commit ID: " + commitId);
-        }
-
         return Instant.ofEpochSecond(revCommit.getCommitTime());
     }
 
