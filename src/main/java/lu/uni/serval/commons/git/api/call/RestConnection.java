@@ -20,7 +20,9 @@ public class RestConnection {
         mapper = new ObjectMapper();
     }
 
-    static public String getRequest(String request, String token) throws IOException {
+    private RestConnection() {}
+
+    public static String getRequest(String request, String token) throws IOException {
         final HttpClient client = HttpClientBuilder.create().build();
         final HttpGet get = new HttpGet(request);
 
@@ -30,7 +32,7 @@ public class RestConnection {
         return EntityUtils.toString(response.getEntity());
     }
 
-    static public <T> T getObject(String request, String token, Class<T> type) throws IOException {
+    public static <T> T getObject(String request, String token, Class<T> type) throws IOException {
         String json = RestConnection.getRequest(request, token);
 
         if(json.isEmpty()) {
@@ -41,7 +43,7 @@ public class RestConnection {
         return mapper.readValue(json, javaType);
     }
 
-    static public <T> Set<T> getObjectList(String request, String token, Class<T> type) throws IOException {
+    public static <T> Set<T> getObjectList(String request, String token, Class<T> type) throws IOException {
         String json = RestConnection.getRequest(request, token);
 
         if(json.isEmpty()) {

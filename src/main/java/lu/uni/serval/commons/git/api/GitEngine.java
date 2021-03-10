@@ -15,7 +15,7 @@ public abstract class GitEngine {
     private String defaultBranch;
     private Map<String, String> branches;
 
-    public GitEngine(){
+    protected GitEngine(){
         this.cloneFolder = System.getProperty("java.io.tmpdir");
         this.defaultBranch = "master";
         this.branches = new HashMap<>();
@@ -66,7 +66,7 @@ public abstract class GitEngine {
         return branches.getOrDefault(project, defaultBranch);
     }
 
-    abstract public Set<LocalRepository> cloneProjectsFromNames(Set<String> names) throws IOException, InvalidGitRepositoryException;
-    abstract public Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, InvalidGitRepositoryException;
-    abstract public Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, InvalidGitRepositoryException;
+    public abstract Set<LocalRepository> cloneProjectsFromNames(Set<String> names) throws IOException, InvalidGitRepositoryException;
+    public abstract Set<LocalRepository> cloneProjectsFromGroup(String group) throws IOException, InvalidGitRepositoryException;
+    public abstract Set<LocalRepository> cloneProjectsFromUser(String user) throws IOException, InvalidGitRepositoryException;
 }
