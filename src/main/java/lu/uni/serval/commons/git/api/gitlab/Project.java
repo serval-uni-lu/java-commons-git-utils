@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.List;
-import java.util.Map;
 
 public class Project {
     private int id;
@@ -27,7 +26,7 @@ public class Project {
     private Namespace namespace;
     private String containerRegistryImagePrefix;
     private Links links;
-    private boolean empty_repo;
+    private boolean emptyRepo;
     private boolean archived;
     private String visibility;
     private Owner owner;
@@ -155,8 +154,8 @@ public class Project {
     }
 
     @JsonSetter("created_at")
-    public void setCreatedAt(String created_at) {
-        this.createdAt = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     @JsonGetter("default_branch")
@@ -255,12 +254,12 @@ public class Project {
 
     @JsonGetter("empty_repo")
     public boolean isEmptyRepo() {
-        return empty_repo;
+        return emptyRepo;
     }
 
     @JsonSetter("empty_repo")
     public void setEmptyRepo(boolean emptyRepo) {
-        this.empty_repo = emptyRepo;
+        this.emptyRepo = emptyRepo;
     }
 
     @JsonGetter("archived")
@@ -407,8 +406,8 @@ public class Project {
     }
 
     @JsonSetter("creator_id")
-    public void setCreatorId(int creator_id) {
-        this.creatorId = creator_id;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     @JsonGetter("import_status")
@@ -417,8 +416,8 @@ public class Project {
     }
 
     @JsonSetter("import_status")
-    public void setImportStatus(String import_status) {
-        this.importStatus = import_status;
+    public void setImportStatus(String importStatus) {
+        this.importStatus = importStatus;
     }
 
     @JsonSetter("issues_access_level")

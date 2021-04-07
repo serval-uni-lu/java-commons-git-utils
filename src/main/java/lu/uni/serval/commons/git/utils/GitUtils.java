@@ -359,9 +359,8 @@ public class GitUtils {
             case WEEKLY: return isSameWeek(date1, date2);
             case MONTHLY: return isSameMonth(date1, date2);
             case YEARLY: return isSameYear(date1, date2);
+            default: return false;
         }
-
-        return false;
     }
 
     static boolean isSameDay(Instant date1, Instant date2){

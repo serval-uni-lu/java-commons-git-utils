@@ -4,7 +4,7 @@ package lu.uni.serval.commons.git.utils;
 import java.time.Instant;
 
 public class GitCommit {
-    private final static GitCommit none = new GitCommit("", Instant.EPOCH);
+    private static final GitCommit none = new GitCommit("", Instant.EPOCH);
 
     private final String id;
     private final String tag;
