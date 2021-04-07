@@ -9,23 +9,23 @@ public class Group {
     private String path;
     private String description;
     private String visibility;
-    private boolean share_with_group_lock;
-    private boolean require_two_factor_authentication;
-    private int two_factor_grace_period;
-    private String project_creation_level;
-    private String auto_devops_enabled;
-    private String subgroup_creation_level;
-    private String emails_disabled;
-    private String mentions_disabled;
-    private boolean lfs_enabled;
-    private String avatar_url;
-    private String web_url;
-    private boolean request_access_enabled;
-    private String full_name;
-    private String full_path;
-    private int parent_id;
-    private int default_branch_protection;
-    private String created_at;
+    private boolean shareWithGroupLock;
+    private boolean requireTwoFactorAuthentication;
+    private int twoFactorGracePeriod;
+    private String projectCreationLevel;
+    private String autoDevopsEnabled;
+    private String subgroupCreationLevel;
+    private String emailsDisabled;
+    private String mentionsDisabled;
+    private boolean lfsEnabled;
+    private String avatarUrl;
+    private String webUrl;
+    private boolean requestAccessEnabled;
+    private String fullName;
+    private String fullPath;
+    private int parentId;
+    private int defaultBranchProtection;
+    private String createdAt;
 
     private String ldap_cn;
     private String ldap_access;
@@ -52,12 +52,12 @@ public class Group {
 
     @JsonGetter("web_url")
     public String getWebUrl() {
-        return web_url;
+        return webUrl;
     }
 
     @JsonSetter("web_url")
     public void setWebUrl(String web_url) {
-        this.web_url = web_url;
+        this.webUrl = web_url;
     }
 
     @JsonGetter("path")
@@ -82,82 +82,82 @@ public class Group {
 
     @JsonGetter("share_with_group_lock")
     public boolean isShareWithGroupLock(){
-        return this.share_with_group_lock;
+        return this.shareWithGroupLock;
     }
 
     @JsonSetter("share_with_group_lock")
     public void setShareWithGroupLock(boolean share_with_group_lock){
-        this.share_with_group_lock = share_with_group_lock;
+        this.shareWithGroupLock = share_with_group_lock;
     }
 
     @JsonGetter("require_two_factor_authentication")
     public boolean isRequireTwoFactorAuthentication(){
-        return this.require_two_factor_authentication;
+        return this.requireTwoFactorAuthentication;
     }
 
     @JsonSetter("require_two_factor_authentication")
     public void setRequireTwoFactorAuthentication(boolean require_two_factor_authentication){
-        this.require_two_factor_authentication = require_two_factor_authentication;
+        this.requireTwoFactorAuthentication = require_two_factor_authentication;
     }
 
     @JsonGetter("two_factor_grace_period")
     public int getTwoFactorGracePeriod(){
-        return this.two_factor_grace_period;
+        return this.twoFactorGracePeriod;
     }
 
     @JsonSetter("two_factor_grace_period")
     public void setTwoFactorGracePeriod(int two_factor_grace_period){
-        this.two_factor_grace_period = two_factor_grace_period;
+        this.twoFactorGracePeriod = two_factor_grace_period;
     }
 
     @JsonGetter("project_creation_level")
     public String getProjectCreationLevel(){
-        return this.project_creation_level;
+        return this.projectCreationLevel;
     }
 
     @JsonSetter("project_creation_level")
     public void setProjectCreationLevel(String project_creation_level){
-        this.project_creation_level = project_creation_level;
+        this.projectCreationLevel = project_creation_level;
     }
 
     @JsonGetter("auto_devops_enabled")
     public String getAutoDevopsEnabled(){
-        return this.auto_devops_enabled;
+        return this.autoDevopsEnabled;
     }
 
     @JsonSetter("auto_devops_enabled")
     public void setAutoDevopsEnabled(String auto_devops_enabled){
-        this.auto_devops_enabled = auto_devops_enabled;
+        this.autoDevopsEnabled = auto_devops_enabled;
     }
 
     @JsonGetter("subgroup_creation_level")
     public String getSubgroupCreationLevel(){
-        return this.subgroup_creation_level;
+        return this.subgroupCreationLevel;
     }
 
     @JsonSetter("subgroup_creation_level")
     public void setSubgroupCreationLevel(String subgroup_creation_level){
-        this.subgroup_creation_level = subgroup_creation_level;
+        this.subgroupCreationLevel = subgroup_creation_level;
     }
 
     @JsonGetter("emails_disabled")
     public String getEmailsDisabled(){
-        return this.emails_disabled;
+        return this.emailsDisabled;
     }
 
     @JsonSetter("emails_disabled")
     public void setEmailsDisabled(String emails_disabled){
-        this.emails_disabled = emails_disabled;
+        this.emailsDisabled = emails_disabled;
     }
 
     @JsonGetter("mentions_disabled")
     public String getMentionsDisabled(){
-        return this.mentions_disabled;
+        return this.mentionsDisabled;
     }
 
     @JsonSetter("mentions_disabled")
     public void setMentionsDisabled(String mentions_disabled){
-        this.mentions_disabled = mentions_disabled;
+        this.mentionsDisabled = mentions_disabled;
     }
 
     @JsonGetter("visibility")
@@ -172,62 +172,62 @@ public class Group {
 
     @JsonGetter("lfs_enabled")
     public boolean isLfsEnabled() {
-        return lfs_enabled;
+        return lfsEnabled;
     }
 
     @JsonSetter("lfs_enabled")
     public void setLfsEnabled(boolean lfs_enabled) {
-        this.lfs_enabled = lfs_enabled;
+        this.lfsEnabled = lfs_enabled;
     }
 
     @JsonGetter("avatar_url")
     public String getAvatarUrl() {
-        return avatar_url;
+        return avatarUrl;
     }
 
     @JsonSetter("avatar_url")
     public void setAvatarUrl(String avatar_url) {
-        this.avatar_url = avatar_url;
+        this.avatarUrl = avatar_url;
     }
 
     @JsonGetter("request_access_enabled")
     public boolean isRequestAccessEnabled() {
-        return request_access_enabled;
+        return requestAccessEnabled;
     }
 
     @JsonSetter("request_access_enabled")
     public void setRequestAccessEnabled(boolean request_access_enabled) {
-        this.request_access_enabled = request_access_enabled;
+        this.requestAccessEnabled = request_access_enabled;
     }
 
     @JsonGetter("full_name")
     public String getFullName() {
-        return full_name;
+        return fullName;
     }
 
     @JsonSetter("full_name")
     public void setFullName(String full_name) {
-        this.full_name = full_name;
+        this.fullName = full_name;
     }
 
     @JsonGetter("full_path")
-    public String getFull_path() {
-        return full_path;
+    public String getFullPath() {
+        return fullPath;
     }
 
     @JsonSetter("full_path")
     public void setFullPath(String full_path) {
-        this.full_path = full_path;
+        this.fullPath = full_path;
     }
 
     @JsonGetter("parent_id")
     public int getParentId() {
-        return parent_id;
+        return parentId;
     }
 
     @JsonSetter("parent_id")
     public void setParentId(int parent_id) {
-        this.parent_id = parent_id;
+        this.parentId = parent_id;
     }
 
     @JsonGetter("ldap_cn")
@@ -252,21 +252,21 @@ public class Group {
 
     @JsonGetter("default_branch_protection")
     public int getDefaultBranchProtection(){
-        return default_branch_protection;
+        return defaultBranchProtection;
     }
 
     @JsonSetter("default_branch_protection")
     public void setDefaultBranchProtection(int default_branch_protection){
-        this.default_branch_protection = default_branch_protection;
+        this.defaultBranchProtection = default_branch_protection;
     }
 
     @JsonGetter("created_at")
     public String getCreatedAt(){
-        return created_at;
+        return createdAt;
     }
 
     @JsonSetter("created_at")
     public void setCreatedAt(String created_at){
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 }
