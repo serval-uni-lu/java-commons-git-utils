@@ -626,8 +626,8 @@ public class Project {
     }
 
     @JsonSetter("merge_method")
-    public void setMergeMethod(String merge_method) {
-        this.mergeMethod = merge_method;
+    public void setMergeMethod(String mergeMethod) {
+        this.mergeMethod = mergeMethod;
     }
 
     @JsonGetter("autoclose_referenced_issues")

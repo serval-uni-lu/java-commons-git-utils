@@ -56,8 +56,8 @@ public class Group {
     }
 
     @JsonSetter("web_url")
-    public void setWebUrl(String web_url) {
-        this.webUrl = web_url;
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
     }
 
     @JsonGetter("path")
