@@ -50,6 +50,7 @@ public class Project {
     private boolean sharedRunnersEnabled;
     private boolean lfsEnabled;
     private int creatorId;
+    private ContainerExpirationPolicy containerExpirationPolicy;
     private String importStatus;
     private int openIssuesCount;
     private int ciDefaultGitDepth;
@@ -408,6 +409,16 @@ public class Project {
     @JsonSetter("creator_id")
     public void setCreatorId(int creatorId) {
         this.creatorId = creatorId;
+    }
+
+    @JsonGetter("container_expiration_policy")
+    public ContainerExpirationPolicy getContainerExpirationPolicy() {
+        return containerExpirationPolicy;
+    }
+
+    @JsonSetter("container_expiration_policy")
+    public void setContainerExpirationPolicy(ContainerExpirationPolicy containerExpirationPolicy) {
+        this.containerExpirationPolicy = containerExpirationPolicy;
     }
 
     @JsonGetter("import_status")
