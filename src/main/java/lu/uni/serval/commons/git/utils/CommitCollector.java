@@ -160,7 +160,7 @@ public class CommitCollector {
         }
 
         for(DiffEntry diffEntry: commit.getDifference().getEntries()){
-            if(isSubFolderChanged(diffEntry, subFolders, extensions)){
+            if(isEntryInSubFolder(diffEntry, subFolders, extensions)){
                 return true;
             }
         }
@@ -168,7 +168,7 @@ public class CommitCollector {
         return false;
     }
 
-    private static boolean isSubFolderChanged(DiffEntry diffEntry, Set<String> subFolders, Set<String> extensions){
+    private static boolean isEntryInSubFolder(DiffEntry diffEntry, Set<String> subFolders, Set<String> extensions){
         for(String subFolder: subFolders){
             try {
                 if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())
