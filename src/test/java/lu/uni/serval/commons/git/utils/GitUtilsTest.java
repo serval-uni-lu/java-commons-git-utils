@@ -42,14 +42,14 @@ class GitUtilsTest {
 
         final GitCommit commit = localRepository.getGitCommit();
 
-        assertEquals(TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:25Z"), commit.getDate());
+        assertEquals(Instant.parse("2016-04-04T11:21:25Z"), commit.getDate());
     }
 
     @Test
     void testCreateLocalRepositoryGetHeadCommit() throws GitAPIException, IOException {
         final GitCommit commit = GitUtils.createLocalRepository(git2).getGitCommit();
 
-        assertEquals(TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:25Z"), commit.getDate());
+        assertEquals(Instant.parse("2016-04-04T11:21:25Z"), commit.getDate());
         assertEquals("29e929fbc5dc6a2e9c620069b24e2a143af4285f", commit.getId());
         assertEquals(1, commit.getDifference().getEntries().size());
         assertFalse(commit.getDifference().getFormatted().isEmpty());
@@ -80,7 +80,7 @@ class GitUtilsTest {
 
     @Test
     void testCheckoutByDate() throws IOException, GitAPIException, CommitNotFoundException {
-        final Ref ref = GitUtils.checkout(git2, TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:10Z"), "master");
+        final Ref ref = GitUtils.checkout(git2, Instant.parse("2016-04-04T11:21:10Z"), "master");
 
         try(RevWalk revWalk = new RevWalk(git2.getRepository())){
             final RevCommit commit = revWalk.parseCommit(ref.getObjectId());
@@ -91,7 +91,7 @@ class GitUtilsTest {
     @Test
     void testCheckoutByDateTooEarly() throws IOException, GitAPIException {
         try{
-            GitUtils.checkout(git2, TimeUtils.fromIsoDateTimeString("2016-03-04T11:21:10Z"), "master");
+            GitUtils.checkout(git2, Instant.parse("2016-03-04T11:21:10Z"), "master");
             fail("Should raise a CommitNotFoundException");
         }
         catch (CommitNotFoundException e){
@@ -129,7 +129,7 @@ class GitUtilsTest {
     @Test
     void testGetCommitDate() throws IOException {
         final Instant date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
-        assertEquals(TimeUtils.fromIsoDateTimeString("2016-04-04T11:21:25Z"), date);
+        assertEquals(Instant.parse("2016-04-04T11:21:25Z"), date);
     }
 
     @Test

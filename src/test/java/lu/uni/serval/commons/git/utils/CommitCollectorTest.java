@@ -8,12 +8,9 @@ import org.junit.jupiter.api.Test;
 import lu.uni.serval.commons.git.Helpers;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,7 +77,7 @@ class CommitCollectorTest {
     void testCollectWithStartDate() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
-                .from(TimeUtils.fromIsoDateString("2014-11-17"))
+                .from(Instant.parse("2014-11-17T00:00:00.000Z"))
                 .collect();
 
         assertEquals(4, commits.size());
@@ -90,7 +87,7 @@ class CommitCollectorTest {
     void testCollectWithEndDate() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
-                .to(TimeUtils.fromIsoDateString("2014-11-17"))
+                .to(Instant.parse("2014-11-17T00:00:00.000Z"))
                 .collect();
 
         assertEquals(9, commits.size());

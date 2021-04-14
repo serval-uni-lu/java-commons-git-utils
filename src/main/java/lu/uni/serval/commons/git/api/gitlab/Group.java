@@ -3,6 +3,8 @@ package lu.uni.serval.commons.git.api.gitlab;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.util.List;
+
 public class Group extends GitlabEntity {
     private String path;
     private String description;
@@ -16,16 +18,19 @@ public class Group extends GitlabEntity {
     private String emailsDisabled;
     private String mentionsDisabled;
     private boolean lfsEnabled;
-    private String avatarUrl;
     private boolean requestAccessEnabled;
     private String fullName;
     private String fullPath;
+    private String runnersToken;
+    private int fileTemplateProjectId;
     private int parentId;
     private int defaultBranchProtection;
-    private String createdAt;
-
+    private List<GroupRef> sharedWithGroups;
+    private List<Project> projects;
+    private List<Project> sharedProjects;
     private String ldapCn;
     private String ldapAccess;
+    private Statistics statistics;
 
     @JsonGetter("path")
     public String getPath() {
@@ -147,16 +152,6 @@ public class Group extends GitlabEntity {
         this.lfsEnabled = lfsEnabled;
     }
 
-    @JsonGetter("avatar_url")
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    @JsonSetter("avatar_url")
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
     @JsonGetter("request_access_enabled")
     public boolean isRequestAccessEnabled() {
         return requestAccessEnabled;
@@ -185,6 +180,26 @@ public class Group extends GitlabEntity {
     @JsonSetter("full_path")
     public void setFullPath(String fullPath) {
         this.fullPath = fullPath;
+    }
+
+    @JsonGetter("runners_token")
+    public String getRunnersToken() {
+        return runnersToken;
+    }
+
+    @JsonSetter("runners_token")
+    public void setRunnersToken(String runnersToken) {
+        this.runnersToken = runnersToken;
+    }
+
+    @JsonGetter("file_template_project_id")
+    public int getFileTemplateProjectId() {
+        return fileTemplateProjectId;
+    }
+
+    @JsonSetter("file_template_project_id")
+    public void setFileTemplateProjectId(int fileTemplateProjectId) {
+        this.fileTemplateProjectId = fileTemplateProjectId;
     }
 
     @JsonGetter("parent_id")
@@ -227,13 +242,43 @@ public class Group extends GitlabEntity {
         this.defaultBranchProtection = defaultBranchProtection;
     }
 
-    @JsonGetter("created_at")
-    public String getCreatedAt(){
-        return createdAt;
+    @JsonGetter("shared_with_groups")
+    public List<GroupRef> getSharedWithGroups() {
+        return sharedWithGroups;
     }
 
-    @JsonSetter("created_at")
-    public void setCreatedAt(String createdAt){
-        this.createdAt = createdAt;
+    @JsonSetter("shared_with_groups")
+    public void setSharedWithGroups(List<GroupRef> sharedWithGroups) {
+        this.sharedWithGroups = sharedWithGroups;
+    }
+
+    @JsonGetter("projects")
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    @JsonSetter("projects")
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+
+    @JsonGetter("shared_projects")
+    public List<Project> getSharedProjects() {
+        return sharedProjects;
+    }
+
+    @JsonSetter("shared_projects")
+    public void setSharedProjects(List<Project> sharedProjects) {
+        this.sharedProjects = sharedProjects;
+    }
+
+    @JsonGetter("statistics")
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    @JsonSetter("statistics")
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
     }
 }

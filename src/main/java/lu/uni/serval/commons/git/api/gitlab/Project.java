@@ -3,8 +3,11 @@ package lu.uni.serval.commons.git.api.gitlab;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lu.uni.serval.commons.git.api.UtcConvertor;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Project extends GitlabEntity {
@@ -12,17 +15,15 @@ public class Project extends GitlabEntity {
     private String nameWithNamespace;
     private String path;
     private String pathWithNamespace;
-    private String createdAt;
     private String defaultBranch;
     private List<String> tagList;
     private String sshUrlToRepo;
     private String httpUrlToRepo;
     private String readmeUrl;
-    private String avatarUrl;
     private int starCount;
     private String runnersToken;
     private int forksCount;
-    private String lastActivityAt;
+    private Instant lastActivityAt;
     private Namespace namespace;
     private String containerRegistryImagePrefix;
     private Links links;
@@ -71,7 +72,7 @@ public class Project extends GitlabEntity {
     private String mergeMethod;
     private boolean autocloseReferencedIssues;
     private String suggestionCommitMessage;
-    private Date markedForDeletionAt;
+    private Instant markedForDeletionAt;
     private String markedForDeletionOn;
     private Statistics statistics;
     private List<String> complianceFrameworks;
@@ -134,16 +135,6 @@ public class Project extends GitlabEntity {
         this.pathWithNamespace = pathWithNamespace;
     }
 
-    @JsonGetter("created_at")
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    @JsonSetter("created_at")
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @JsonGetter("default_branch")
     public String getDefaultBranch() {
         return defaultBranch;
@@ -191,15 +182,6 @@ public class Project extends GitlabEntity {
         this.readmeUrl = readmeUrl;
     }
 
-    @JsonGetter("avatar_url")
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
     @JsonGetter("star_count")
     public int getStarCount() {
         return starCount;
@@ -231,12 +213,12 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("last_activity_at")
-    public String getLastActivityAt() {
+    public Instant getLastActivityAt() {
         return lastActivityAt;
     }
 
     @JsonSetter("last_activity_at")
-    public void setLastActivityAt(String lastActivityAt) {
+    public void setLastActivityAt(Instant lastActivityAt) {
         this.lastActivityAt = lastActivityAt;
     }
 
@@ -669,13 +651,13 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("marked_for_deletion_at")
-    public Date getMarkedForDeletionAt() {
+    public Instant getMarkedForDeletionAt() {
         return markedForDeletionAt;
     }
 
     @JsonSetter("marked_for_deletion_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
-    public void setMarkedForDeletionAt(Date markedForDeletionAt) {
+    @JsonDeserialize(converter = UtcConvertor.class)
+    public void setMarkedForDeletionAt(Instant markedForDeletionAt) {
         this.markedForDeletionAt = markedForDeletionAt;
     }
 

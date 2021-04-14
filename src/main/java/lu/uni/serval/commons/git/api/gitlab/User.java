@@ -1,18 +1,17 @@
 package lu.uni.serval.commons.git.api.gitlab;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import lu.uni.serval.commons.git.utils.TimeUtils;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 
 public class User extends GitlabEntity {
     private String username;
     private String email;
     private String state;
-    private String avatarUrl;
-    private Instant creationDate;
     private boolean admin;
     private String bio;
     private String bioHtml;
@@ -24,12 +23,12 @@ public class User extends GitlabEntity {
     private String organization;
     private String jobTitle;
     private Instant lastSignInAt;
-    private Instant confirmedDate;
+    private Instant confirmedAt;
     private int themeId;
-    private Instant lastActivityDate;
+    private LocalDate lastActivityOn;
     private int colorSchemeId;
     private int projectsLimit;
-    private Instant currentSignInDate;
+    private Instant currentSignInAt;
     private String note;
     private Set<Identity> identities;
     private boolean canCreateGroup;
@@ -68,34 +67,6 @@ public class User extends GitlabEntity {
     @JsonSetter("state")
     public void setState(String state) {
         this.state = state;
-    }
-
-    @JsonGetter("avatar_url")
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    @JsonSetter("avatar_url")
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
-    @JsonGetter("created_at")
-    public String getCreationDateAsString(){
-        return TimeUtils.toIsoDateTimeString(creationDate);
-    }
-
-    public Instant getCreationDate() {
-        return creationDate;
-    }
-
-    @JsonSetter("created_at")
-    public void setCreationDate(String creationDate) {
-        setCreationDate(TimeUtils.fromIsoDateTimeString(creationDate));
-    }
-
-    public void setCreationDate(Instant creationDate) {
-        this.creationDate = creationDate;
     }
 
     @JsonGetter("is_admin")
@@ -199,7 +170,7 @@ public class User extends GitlabEntity {
     }
 
     @JsonGetter("last_sign_in_at")
-    public Instant getLastSignInDateAsString(){
+    public Instant getLastSignInAt(){
         return lastSignInAt;
     }
 
@@ -209,21 +180,13 @@ public class User extends GitlabEntity {
     }
 
     @JsonGetter("confirmed_at")
-    public String getConfirmedDateAsString(){
-        return TimeUtils.toIsoDateString(confirmedDate);
-    }
-
-    public Instant getConfirmedDate() {
-        return confirmedDate;
+    public Instant getConfirmedAt(){
+        return confirmedAt;
     }
 
     @JsonSetter("confirmed_at")
-    public void setConfirmedDate(String confirmedDate) {
-        setConfirmedDate(TimeUtils.fromIsoDateTimeString(confirmedDate));
-    }
-
-    public void setConfirmedDate(Instant confirmedDate) {
-        this.confirmedDate = confirmedDate;
+    public void setConfirmedAt(Instant confirmedAt) {
+        this.confirmedAt = confirmedAt;
     }
 
     @JsonGetter("theme_id")
@@ -237,20 +200,14 @@ public class User extends GitlabEntity {
     }
 
     @JsonSetter("last_activity_on")
-    public String getLastActivityDateAsString(){
-        return TimeUtils.toIsoDateString(lastActivityDate);
-    }
-    public Instant getLastActivityDate() {
-        return lastActivityDate;
+    public LocalDate getLastActivityOn(){
+        return lastActivityOn;
     }
 
     @JsonSetter("last_activity_on")
-    public void setLastActivityDate(String lastActivityDate) {
-        setLastActivityDate(TimeUtils.fromIsoDateString(lastActivityDate));
-    }
-
-    public void setLastActivityDate(Instant lastActivityDate) {
-        this.lastActivityDate = lastActivityDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    public void setLastActivityOn(LocalDate lastActivityOn) {
+        this.lastActivityOn = lastActivityOn;
     }
 
     @JsonGetter("color_scheme_id")
@@ -274,17 +231,13 @@ public class User extends GitlabEntity {
     }
 
     @JsonGetter("current_sign_in_at")
-    public String getCurrentSignInDateAsString(){
-        return TimeUtils.toIsoDateTimeString(currentSignInDate);
-    }
-
-    public Instant getCurrentSignInDate() {
-        return currentSignInDate;
+    public Instant getCurrentSignInAt(){
+        return currentSignInAt;
     }
 
     @JsonSetter("current_sign_in_at")
-    public void setCurrentSignInDate(String currentSignInDate)  {
-        setCurrentSignInDate(TimeUtils.fromIsoDateTimeString(currentSignInDate));
+    public void setCurrentSignInAt(Instant currentSignInAt)  {
+        this.currentSignInAt = currentSignInAt;
     }
 
     @JsonGetter("note")
@@ -295,10 +248,6 @@ public class User extends GitlabEntity {
     @JsonSetter("note")
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public void setCurrentSignInDate(Instant currentSignInDate) {
-        this.currentSignInDate = currentSignInDate;
     }
 
     @JsonGetter("identities")

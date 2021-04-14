@@ -1,7 +1,5 @@
 package lu.uni.serval.commons.git.api.gitlab;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lu.uni.serval.commons.git.Helpers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
