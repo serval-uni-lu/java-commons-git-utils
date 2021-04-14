@@ -18,25 +18,30 @@ public class User {
     private Instant creationDate;
     private boolean admin;
     private String bio;
+    private String bioHtml;
     private String location;
     private String skype;
     private String linkedin;
     private String twitter;
     private String websiteUrl;
     private String organization;
-    private Instant lastSignInDate;
+    private String jobTitle;
+    private Instant lastSignInAt;
     private Instant confirmedDate;
     private int themeId;
     private Instant lastActivityDate;
     private int colorSchemeId;
     private int projectsLimit;
     private Instant currentSignInDate;
+    private String note;
     private Set<Identity> identities;
     private boolean canCreateGroup;
     private boolean canCreateProject;
     private boolean twoFactorEnabled;
     private boolean external;
     private boolean privateProfile;
+    private String currentSignInIp;
+    private String lastSignInIp;
 
     @JsonGetter("id")
     public int getId() {
@@ -146,6 +151,16 @@ public class User {
         this.bio = bio;
     }
 
+    @JsonGetter("bio_html")
+    public String getBioHtml() {
+        return bioHtml;
+    }
+
+    @JsonSetter("bio_html")
+    public void setBioHtml(String bioHtml) {
+        this.bioHtml = bioHtml;
+    }
+
     @JsonGetter("location")
     public String getLocation() {
         return location;
@@ -206,22 +221,24 @@ public class User {
         this.organization = organization;
     }
 
-    @JsonGetter("last_sign_in_at")
-    public String getLastSignInDateAsString(){
-        return TimeUtils.toIsoDateTimeString(lastSignInDate);
+    @JsonGetter("job_title")
+    public String getJobTitle() {
+        return jobTitle;
     }
 
-    public Instant getLastSignInDate() {
-        return lastSignInDate;
+    @JsonSetter("job_title")
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    @JsonGetter("last_sign_in_at")
+    public Instant getLastSignInDateAsString(){
+        return lastSignInAt;
     }
 
     @JsonSetter("last_sign_in_at")
-    public void setLastSignInDate(String lastSignInDate) {
-        setLastSignInDate(TimeUtils.fromIsoDateTimeString(lastSignInDate));
-    }
-
-    public void setLastSignInDate(Instant lastSignInDate) {
-        this.lastSignInDate = lastSignInDate;
+    public void setLastSignInAt(Instant lastSignInAt) {
+        this.lastSignInAt = lastSignInAt;
     }
 
     @JsonGetter("confirmed_at")
@@ -303,6 +320,16 @@ public class User {
         setCurrentSignInDate(TimeUtils.fromIsoDateTimeString(currentSignInDate));
     }
 
+    @JsonGetter("note")
+    public String getNote() {
+        return note;
+    }
+
+    @JsonSetter("note")
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     public void setCurrentSignInDate(Instant currentSignInDate) {
         this.currentSignInDate = currentSignInDate;
     }
@@ -365,5 +392,25 @@ public class User {
     @JsonSetter("private_profile")
     public void setPrivateProfile(boolean privateProfile) {
         this.privateProfile = privateProfile;
+    }
+
+    @JsonGetter("current_sign_in_ip")
+    public String getCurrentSignInIp() {
+        return currentSignInIp;
+    }
+
+    @JsonSetter("current_sign_in_ip")
+    public void setCurrentSignInIp(String currentSignInIp) {
+        this.currentSignInIp = currentSignInIp;
+    }
+
+    @JsonGetter("last_sign_in_ip")
+    public String getLastSignInIp() {
+        return lastSignInIp;
+    }
+
+    @JsonSetter("last_sign_in_ip")
+    public void setLastSignInIp(String lastSignInIp) {
+        this.lastSignInIp = lastSignInIp;
     }
 }

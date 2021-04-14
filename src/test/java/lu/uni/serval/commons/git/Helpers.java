@@ -1,5 +1,10 @@
 package lu.uni.serval.commons.git;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lu.uni.serval.commons.git.api.gitlab.Project;
 import lu.uni.serval.commons.git.utils.GitUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -11,7 +16,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -73,6 +81,16 @@ public class Helpers {
         return Paths.get(resource.toURI()).toFile();
     }
 
+    public static String getResourceContent(String name) throws IOException, URISyntaxException {
+        final StringBuilder contentBuilder = new StringBuilder();
+
+        try (Stream<String> stream = Files.lines(getResourceFile(name).toPath(), StandardCharsets.UTF_8)) {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+
+        return contentBuilder.toString();
+    }
+
     public static Git setRepository(String zipResource){
         try {
             File folder = Helpers.unzip(Helpers.getResourceFile(zipResource));
@@ -94,5 +112,15 @@ public class Helpers {
         }
     }
 
+    public static <T> T deserializeJsonFromResources(String name, Class<T> type) throws IOException, URISyntaxException {
+        final String json = getResourceContent(name);
 
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.registerModule(new JavaTimeModule());
+
+        final JavaType javaType = mapper.getTypeFactory().constructType(type);
+
+        return mapper.readValue(json, javaType);
+    }
 }

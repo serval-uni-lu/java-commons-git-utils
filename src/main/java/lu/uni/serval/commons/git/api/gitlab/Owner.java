@@ -1,7 +1,10 @@
 package lu.uni.serval.commons.git.api.gitlab;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+
+import java.time.Instant;
 
 public class Owner {
     private int id;
@@ -10,6 +13,7 @@ public class Owner {
     private String state;
     private String avatarUrl;
     private String webUrl;
+    private Instant createAt;
 
     @JsonGetter("id")
     public int getId() {
@@ -69,5 +73,15 @@ public class Owner {
     @JsonSetter("web_url")
     public void setWebUrl(String webUrl) {
         this.webUrl = webUrl;
+    }
+
+    @JsonGetter("created_at")
+    public Instant getCreateAt() {
+        return createAt;
+    }
+
+    @JsonSetter("created_at")
+    public void setCreateAt(Instant createAt) {
+        this.createAt = createAt;
     }
 }

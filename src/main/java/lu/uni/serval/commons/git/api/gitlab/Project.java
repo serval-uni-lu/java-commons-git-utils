@@ -1,8 +1,10 @@
 package lu.uni.serval.commons.git.api.gitlab;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.util.Date;
 import java.util.List;
 
 public class Project {
@@ -21,6 +23,7 @@ public class Project {
     private String readmeUrl;
     private String avatarUrl;
     private int starCount;
+    private String runnersToken;
     private int forksCount;
     private String lastActivityAt;
     private Namespace namespace;
@@ -52,6 +55,8 @@ public class Project {
     private int creatorId;
     private ContainerExpirationPolicy containerExpirationPolicy;
     private String importStatus;
+    private String importError;
+    private Permissions permisions;
     private int openIssuesCount;
     private int ciDefaultGitDepth;
     private boolean publicJobs;
@@ -69,10 +74,13 @@ public class Project {
     private String mergeMethod;
     private boolean autocloseReferencedIssues;
     private String suggestionCommitMessage;
+    private Date markedForDeletionAt;
     private String markedForDeletionOn;
+    private Statistics statistics;
     private List<String> complianceFrameworks;
     private boolean autoDevopsEnabled;
     private String autoDevopsDeployStrategy;
+    private String repositoryStorage;
     private int approvalsBeforeMerge;
     private boolean mirror;
     private int mirrorUserId;
@@ -229,8 +237,19 @@ public class Project {
         return starCount;
     }
 
+    @JsonSetter("star_count")
     public void setStarCount(int starCount) {
         this.starCount = starCount;
+    }
+
+    @JsonGetter("runners_token")
+    public String getRunnersToken() {
+        return runnersToken;
+    }
+
+    @JsonSetter("runners_token")
+    public void setRunnersToken(String runnersToken) {
+        this.runnersToken = runnersToken;
     }
 
     @JsonGetter("forks_count")
@@ -429,6 +448,26 @@ public class Project {
     @JsonSetter("import_status")
     public void setImportStatus(String importStatus) {
         this.importStatus = importStatus;
+    }
+
+    @JsonGetter("import_error")
+    public String getImportError() {
+        return importError;
+    }
+
+    @JsonGetter("permissions")
+    public Permissions getPermisions() {
+        return permisions;
+    }
+
+    @JsonSetter("permissions")
+    public void setPermisions(Permissions permisions) {
+        this.permisions = permisions;
+    }
+
+    @JsonSetter("import_error")
+    public void setImportError(String importError) {
+        this.importError = importError;
     }
 
     @JsonSetter("issues_access_level")
@@ -661,6 +700,17 @@ public class Project {
         this.suggestionCommitMessage = suggestionCommitMessage;
     }
 
+    @JsonGetter("marked_for_deletion_at")
+    public Date getMarkedForDeletionAt() {
+        return markedForDeletionAt;
+    }
+
+    @JsonSetter("marked_for_deletion_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    public void setMarkedForDeletionAt(Date markedForDeletionAt) {
+        this.markedForDeletionAt = markedForDeletionAt;
+    }
+
     @JsonGetter("marked_for_deletion_on")
     public String getMarkedForDeletionOn() {
         return markedForDeletionOn;
@@ -669,6 +719,16 @@ public class Project {
     @JsonSetter("marked_for_deletion_on")
     public void setMarkedForDeletionOn(String markedForDeletionOn) {
         this.markedForDeletionOn = markedForDeletionOn;
+    }
+
+    @JsonGetter("statistics")
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    @JsonSetter("statistics")
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
     }
 
     @JsonGetter("compliance_frameworks")
@@ -819,6 +879,16 @@ public class Project {
     @JsonSetter("auto_devops_deploy_strategy")
     public void setAutoDevopsDeployStrategy(String autoDevopsDeployStrategy){
         this.autoDevopsDeployStrategy = autoDevopsDeployStrategy;
+    }
+
+    @JsonGetter("repository_storage")
+    public String getRepositoryStorage() {
+        return repositoryStorage;
+    }
+
+    @JsonSetter("repository_storage")
+    public void setRepositoryStorage(String repositoryStorage) {
+        this.repositoryStorage = repositoryStorage;
     }
 
     @JsonGetter("packages_enabled")
