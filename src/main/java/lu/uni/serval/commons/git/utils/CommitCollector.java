@@ -160,20 +160,28 @@ public class CommitCollector {
         }
 
         for(DiffEntry diffEntry: commit.getDifference().getEntries()){
-            for(String subFolder: subFolders){
-                try {
-                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())
-                            && hasExtension(diffEntry.getOldPath(), extensions)){
-                        return true;
-                    }
+            if(isSubFolderChanged(diffEntry, subFolders, extensions)){
+                return true;
+            }
+        }
 
-                    if(FilenameUtils.directoryContains(subFolder, diffEntry.getNewPath())
-                            && hasExtension(diffEntry.getNewPath(), extensions)){
-                        return true;
-                    }
-                } catch (IOException e) {
+        return false;
+    }
+
+    private static boolean isSubFolderChanged(DiffEntry diffEntry, Set<String> subFolders, Set<String> extensions){
+        for(String subFolder: subFolders){
+            try {
+                if(FilenameUtils.directoryContains(subFolder, diffEntry.getOldPath())
+                        && hasExtension(diffEntry.getOldPath(), extensions)){
                     return true;
                 }
+
+                if(FilenameUtils.directoryContains(subFolder, diffEntry.getNewPath())
+                        && hasExtension(diffEntry.getNewPath(), extensions)){
+                    return true;
+                }
+            } catch (IOException e) {
+                return true;
             }
         }
 

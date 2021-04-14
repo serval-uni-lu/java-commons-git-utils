@@ -2,8 +2,7 @@ package lu.uni.serval.commons.git;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lu.uni.serval.commons.git.api.MapperFactory;
 import lu.uni.serval.commons.git.utils.GitUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
@@ -112,11 +111,7 @@ public class Helpers {
 
     public static <T> T deserializeJsonFromResources(String name, Class<T> type) throws IOException, URISyntaxException {
         final String json = getResourceContent(name);
-
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.registerModule(new JavaTimeModule());
-
+        final ObjectMapper mapper = MapperFactory.create();
         final JavaType javaType = mapper.getTypeFactory().constructType(type);
 
         return mapper.readValue(json, javaType);

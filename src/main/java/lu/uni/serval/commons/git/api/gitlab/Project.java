@@ -1,13 +1,11 @@
 package lu.uni.serval.commons.git.api.gitlab;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lu.uni.serval.commons.git.api.UtcConvertor;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 
 public class Project extends GitlabEntity {

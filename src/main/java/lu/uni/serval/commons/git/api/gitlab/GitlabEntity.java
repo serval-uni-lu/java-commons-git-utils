@@ -9,7 +9,6 @@ public class GitlabEntity {
     private int id;
     private String name;
     private String webUrl;
-    private String state;
     private String avatarUrl;
     private Instant createdAt;
 
@@ -41,16 +40,6 @@ public class GitlabEntity {
     @JsonSetter("web_url")
     public void setWebUrl(String webUrl) {
         this.webUrl = webUrl;
-    }
-
-    @JsonGetter("state")
-    public String getState() {
-        return state;
-    }
-
-    @JsonSetter("state")
-    public void setState(String state) {
-        this.state = state;
     }
 
     @JsonGetter("avatar_url")

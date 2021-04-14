@@ -2,6 +2,7 @@ package lu.uni.serval.commons.git.api.call;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lu.uni.serval.commons.git.api.MapperFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -13,11 +14,10 @@ import java.util.Set;
 
 public class RestConnection {
 
-    private static ObjectMapper mapper;
+    private static final ObjectMapper mapper;
 
     static {
-
-        mapper = new ObjectMapper();
+        mapper = MapperFactory.create();
     }
 
     private RestConnection() {}
