@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ProjectTest {
+class ProjectTest {
     static Project project1;
     static Project project2;
 

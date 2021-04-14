@@ -7,10 +7,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.Date;
 import java.util.List;
 
-public class Project {
-    private int id;
+public class Project extends GitlabEntity {
     private String description;
-    private String name;
     private String nameWithNamespace;
     private String path;
     private String pathWithNamespace;
@@ -19,7 +17,6 @@ public class Project {
     private List<String> tagList;
     private String sshUrlToRepo;
     private String httpUrlToRepo;
-    private String webUrl;
     private String readmeUrl;
     private String avatarUrl;
     private int starCount;
@@ -98,16 +95,6 @@ public class Project {
     private boolean requirementsEnabled;
     private boolean securityAndComplianceEnabled;
 
-    @JsonGetter("id")
-    public int getId() {
-        return id;
-    }
-
-    @JsonSetter("id")
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @JsonGetter("description")
     public String getDescription() {
         return description;
@@ -116,16 +103,6 @@ public class Project {
     @JsonSetter("description")
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @JsonGetter("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonSetter("name")
-    public void setName(String name) {
-        this.name = name;
     }
 
     @JsonGetter("name_with_namespace")
@@ -202,15 +179,6 @@ public class Project {
     @JsonSetter("http_url_to_repo")
     public void setHttpUrlToRepo(String httpUrlToRepo) {
         this.httpUrlToRepo = httpUrlToRepo;
-    }
-
-    @JsonGetter("web_url")
-    public String getWebUrl() {
-        return webUrl;
-    }
-
-    public void setWebUrl(String webUrl) {
-        this.webUrl = webUrl;
     }
 
     @JsonGetter("readme_url")

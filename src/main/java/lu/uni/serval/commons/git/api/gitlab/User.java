@@ -7,14 +7,11 @@ import lu.uni.serval.commons.git.utils.TimeUtils;
 import java.time.Instant;
 import java.util.Set;
 
-public class User {
-    private int id;
+public class User extends GitlabEntity {
     private String username;
     private String email;
-    private String name;
     private String state;
     private String avatarUrl;
-    private String webUrl;
     private Instant creationDate;
     private boolean admin;
     private String bio;
@@ -43,16 +40,6 @@ public class User {
     private String currentSignInIp;
     private String lastSignInIp;
 
-    @JsonGetter("id")
-    public int getId() {
-        return id;
-    }
-
-    @JsonSetter("id")
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @JsonGetter("username")
     public String getUsername() {
         return username;
@@ -73,16 +60,6 @@ public class User {
         this.email = email;
     }
 
-    @JsonGetter("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonSetter("name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @JsonGetter("state")
     public String getState() {
         return state;
@@ -101,16 +78,6 @@ public class User {
     @JsonSetter("avatar_url")
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
-    }
-
-    @JsonGetter("web_url")
-    public String getWebUrl() {
-        return webUrl;
-    }
-
-    @JsonSetter("web_url")
-    public void setWebUrl(String webUrl) {
-        this.webUrl = webUrl;
     }
 
     @JsonGetter("created_at")

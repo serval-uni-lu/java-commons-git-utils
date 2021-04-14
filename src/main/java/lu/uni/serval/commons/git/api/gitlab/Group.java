@@ -3,9 +3,7 @@ package lu.uni.serval.commons.git.api.gitlab;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class Group {
-    private int id;
-    private String name;
+public class Group extends GitlabEntity {
     private String path;
     private String description;
     private String visibility;
@@ -19,7 +17,6 @@ public class Group {
     private String mentionsDisabled;
     private boolean lfsEnabled;
     private String avatarUrl;
-    private String webUrl;
     private boolean requestAccessEnabled;
     private String fullName;
     private String fullPath;
@@ -29,36 +26,6 @@ public class Group {
 
     private String ldapCn;
     private String ldapAccess;
-
-    @JsonGetter("id")
-    public int getId() {
-        return id;
-    }
-
-    @JsonSetter("id")
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @JsonGetter("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonSetter("name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @JsonGetter("web_url")
-    public String getWebUrl() {
-        return webUrl;
-    }
-
-    @JsonSetter("web_url")
-    public void setWebUrl(String webUrl) {
-        this.webUrl = webUrl;
-    }
 
     @JsonGetter("path")
     public String getPath() {
