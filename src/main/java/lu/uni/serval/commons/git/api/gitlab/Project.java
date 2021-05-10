@@ -93,6 +93,8 @@ public class Project extends GitlabEntity {
     private boolean restrictUserDefinedVariables;
     private boolean requirementsEnabled;
     private boolean securityAndComplianceEnabled;
+    private String issuesTemplate;
+    private String mergeRequestsTemplate;
 
     @JsonGetter("description")
     public String getDescription() {
@@ -569,7 +571,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("allow_merge_on_skipped_pipeline")
-    public boolean getAllowMergeOnSkippedPipeline() {
+    public boolean isAllowMergeOnSkippedPipeline() {
         return allowMergeOnSkippedPipeline;
     }
 
@@ -644,7 +646,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonSetter("suggestion_commit_message")
-    public void isSuggestionCommitMessage(String suggestionCommitMessage) {
+    public void setSuggestionCommitMessage(String suggestionCommitMessage) {
         this.suggestionCommitMessage = suggestionCommitMessage;
     }
 
@@ -720,7 +722,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("mirror_trigger_builds")
-    public boolean getMirrorTriggerBuilds(){
+    public boolean isMirrorTriggerBuilds(){
         return mirrorTriggerBuilds;
     }
 
@@ -730,7 +732,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("only_mirror_protected_branches")
-    public boolean getOnlyMirrorProtectedBranches(){
+    public boolean isOnlyMirrorProtectedBranches(){
         return onlyMirrorProtectedBranches;
     }
 
@@ -740,7 +742,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("mirror_overwrites_diverged_branches")
-    public boolean getMirrorOverwritesDivergedBranches(){
+    public boolean isMirrorOverwritesDivergedBranches(){
         return mirrorOverwritesDivergedBranches;
     }
 
@@ -810,7 +812,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("auto_devops_enabled")
-    public boolean getAutoDevopsEnabled(){
+    public boolean isAutoDevopsEnabled(){
         return autoDevopsEnabled;
     }
 
@@ -860,7 +862,7 @@ public class Project extends GitlabEntity {
     }
 
     @JsonGetter("service_desk_address")
-    public String setServiceDeskAddress(){
+    public String getServiceDeskAddress(){
         return serviceDeskAddress;
     }
 
@@ -927,5 +929,25 @@ public class Project extends GitlabEntity {
     @JsonSetter("security_and_compliance_enabled")
     public void setSecurityAndComplianceEnabled(boolean securityAndComplianceEnabled){
         this.securityAndComplianceEnabled = securityAndComplianceEnabled;
+    }
+
+    @JsonGetter("issues_template")
+    public String getIssuesTemplate() {
+        return issuesTemplate;
+    }
+
+    @JsonSetter("issues_template")
+    public void setIssuesTemplate(String issuesTemplate) {
+        this.issuesTemplate = issuesTemplate;
+    }
+
+    @JsonGetter("merge_requests_template")
+    public String getMergeRequestsTemplate() {
+        return mergeRequestsTemplate;
+    }
+
+    @JsonSetter("merge_requests_template")
+    public void setMergeRequestsTemplate(String mergeRequestsTemplate) {
+        this.mergeRequestsTemplate = mergeRequestsTemplate;
     }
 }
