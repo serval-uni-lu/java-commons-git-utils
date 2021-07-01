@@ -119,7 +119,7 @@ public class GitUtils {
         try {
             final RevCommit revCommit = getRevCommit(git, commitId);
             return Optional.of(new GitCommit(revCommit.getName(), Instant.ofEpochSecond(revCommit.getCommitTime())));
-        } catch (InvalidObjectIdException  e) {
+        } catch (InvalidObjectIdException | GitAPIException e) {
             return Optional.empty();
         }
     }
@@ -173,7 +173,7 @@ public class GitUtils {
         return commits;
     }
 
-    public static Instant getCommitDate(Git git, String commitId) throws IOException {
+    public static Instant getCommitDate(Git git, String commitId) throws IOException, GitAPIException {
         final RevCommit revCommit = getRevCommit(git, commitId);
         return Instant.ofEpochSecond(revCommit.getCommitTime());
     }
@@ -274,10 +274,19 @@ public class GitUtils {
         }
     }
 
-    static RevCommit getRevCommit(Git git, String commitId) throws IOException {
+    static RevCommit getRevCommit(Git git, String commitId) throws IOException, GitAPIException {
         try(RevWalk revWalk = new RevWalk(git.getRepository())){
-            ObjectId objectId = ObjectId.fromString(commitId);
-            return revWalk.parseCommit(objectId);
+            for (Ref ref:  git.tagList().call()) {
+                final String shortName = ref.getName().replaceFirst("^refs/tags/", "");
+                final String mediumName = ref.getName().replaceFirst("^refs/", "");
+                final String longName = ref.getName();
+
+                if(commitId.equals(shortName) || commitId.equals(mediumName) || commitId.equals(longName)){
+                    return revWalk.parseCommit(ref.getObjectId());
+                }
+            }
+
+            return revWalk.parseCommit(ObjectId.fromString(commitId));
         }
     }
 

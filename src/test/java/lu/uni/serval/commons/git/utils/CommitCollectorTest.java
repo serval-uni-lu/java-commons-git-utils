@@ -215,6 +215,33 @@ class CommitCollectorTest {
         assertFalse(commits.get(1).getDifference().getFormatted().isEmpty());
     }
 
+    @Test
+    void testCherryPickWithShortTag() throws GitAPIException, IOException {
+        final List<GitCommit> commits = new CommitCollector()
+                .forGit(git3)
+                .cherryPick("tag1");
+
+        assertEquals(1, commits.size());
+    }
+
+    @Test
+    void testCherryPickWithMediumTag() throws GitAPIException, IOException {
+        final List<GitCommit> commits = new CommitCollector()
+                .forGit(git3)
+                .cherryPick("tags/tag1");
+
+        assertEquals(1, commits.size());
+    }
+
+    @Test
+    void testCherryPickWithLongTag() throws GitAPIException, IOException {
+        final List<GitCommit> commits = new CommitCollector()
+                .forGit(git3)
+                .cherryPick("refs/tags/tag1");
+
+        assertEquals(1, commits.size());
+    }
+
     @AfterAll
     static void teardown(){
         Helpers.deleteRepository(git1);

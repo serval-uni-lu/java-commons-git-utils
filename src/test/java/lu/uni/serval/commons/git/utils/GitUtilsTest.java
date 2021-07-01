@@ -147,7 +147,7 @@ class GitUtilsTest {
     }
 
     @Test
-    void testGetCommitDate() throws IOException {
+    void testGetCommitDate() throws IOException, GitAPIException {
         final Instant date = GitUtils.getCommitDate(git2, "29e929fbc5dc6a2e9c620069b24e2a143af4285f");
         assertEquals(Instant.parse("2016-04-04T11:21:25Z"), date);
     }
