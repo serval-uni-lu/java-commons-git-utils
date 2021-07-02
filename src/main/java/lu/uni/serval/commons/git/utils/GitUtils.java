@@ -94,14 +94,12 @@ public class GitUtils {
         UsernamePasswordCredentialsProvider credentials =
                 new UsernamePasswordCredentialsProvider("PRIVATE-TOKEN", token);
 
-        String branchId = String.format("refs/heads/%s", branch);
-
         try{
             Git git = Git.cloneRepository()
                     .setURI(url)
                     .setCredentialsProvider(credentials)
-                    .setBranchesToClone(Collections.singleton(branchId))
-                    .setBranch(branchId)
+                    .setBranchesToClone(branch == null ? Collections.emptyList() : Collections.singleton(branch))
+                    .setBranch(branch)
                     .setDirectory(localFolder)
                     .call();
 

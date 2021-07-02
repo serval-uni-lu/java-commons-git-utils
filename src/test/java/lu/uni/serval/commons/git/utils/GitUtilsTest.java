@@ -195,9 +195,15 @@ class GitUtilsTest {
     }
 
     @Test
-    void testCherryPickWheAbsent() throws IOException {
+    void testCherryPickWhenAbsent() throws IOException {
         final Optional<GitCommit> commit = GitUtils.getCommitById(git3, "12345678912345679");
         assertFalse(commit.isPresent());
+    }
+
+    @Test
+    void testCherryPickWithTag() throws IOException {
+        final Optional<GitCommit> commit = GitUtils.getCommitById(git3, "tag1");
+        assertTrue(commit.isPresent());
     }
 
     @AfterAll
