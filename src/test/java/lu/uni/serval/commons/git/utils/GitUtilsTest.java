@@ -100,7 +100,7 @@ class GitUtilsTest {
 
     @Test
     void testCheckoutByDate() throws IOException, GitAPIException, CommitNotFoundException {
-        final Ref ref = GitUtils.checkout(git2, Instant.parse("2016-04-04T11:21:10Z"), "master");
+        final Ref ref = GitUtils.checkout(git2, Instant.parse("2016-04-04T11:21:10Z"), "b1");
 
         try(RevWalk revWalk = new RevWalk(git2.getRepository())){
             final RevCommit commit = revWalk.parseCommit(ref.getObjectId());

@@ -167,6 +167,7 @@ class CommitCollectorTest {
     void testCollectWithFrequencyLatest() throws IOException, GitAPIException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git1)
+                .onBranch(null)
                 .every(Frequency.LATEST)
                 .collect();
 
@@ -245,5 +246,6 @@ class CommitCollectorTest {
     @AfterAll
     static void teardown(){
         Helpers.deleteRepository(git1);
+        Helpers.deleteRepository(git3);
     }
 }

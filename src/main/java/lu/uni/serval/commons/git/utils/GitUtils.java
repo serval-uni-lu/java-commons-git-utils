@@ -21,11 +21,13 @@ package lu.uni.serval.commons.git.utils;
  */
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.InvalidObjectIdException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -49,6 +51,8 @@ import java.time.temporal.IsoFields;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class GitUtils {
     private static final String EMPTY_BRANCH = "ikora-empty-branch";
@@ -124,30 +128,16 @@ public class GitUtils {
 
     public static List<GitCommit> getCommits(Git git, Instant start, Instant end, String branch) {
         try {
-            final List<GitCommit> commits = new ArrayList<>();
-            final Iterable<RevCommit> revCommits;
-            final ObjectId masterId = resolveBranch(git, "master");
-            final ObjectId branchId = resolveBranch(git, branch);
+            final String branchId = branch == null ? getDefaultBranchName(git) : "refs/heads/" + branch;
+            final Set<RevCommit> revCommits = getRevCommitFromBranch(git, branchId);
 
-            if(branch.equals("master") || branchId == null || masterId == null){
-                revCommits = git.log().call();
-            }
-            else{
-                revCommits = git.log().addRange(masterId, branchId).call();
-            }
-
-            for (RevCommit revCommit : revCommits) {
-                final Instant commitDate = Instant.ofEpochSecond(revCommit.getCommitTime());
-
-                if(isInInterval(commitDate, start, end)){
-                    commits.add(new GitCommit(revCommit.getName(), commitDate));
-                }
-            }
-
-            commits.sort(Comparator.comparing(GitCommit::getDate));
-            return commits;
+            return revCommits.stream()
+                    .filter(c -> isInInterval(Instant.ofEpochSecond(c.getCommitTime()), start, end))
+                    .map(c -> new GitCommit(c.getName(), Instant.ofEpochSecond(c.getCommitTime())))
+                    .sorted(Comparator.comparing(GitCommit::getDate))
+                    .collect(Collectors.toList());
         }
-        catch (GitAPIException | IOException e) {
+        catch (GitAPIException e) {
             return Collections.emptyList();
         }
     }
@@ -212,6 +202,10 @@ public class GitUtils {
     }
 
     public static boolean isBranchExist(Git git, String branch) throws GitAPIException {
+        if(branch == null){
+            return false;
+        }
+
         return git.branchList().call()
                 .stream()
                 .map(Ref::getName)
@@ -300,14 +294,45 @@ public class GitUtils {
         }
     }
 
-    static ObjectId resolveBranch(Git git, String branch) throws GitAPIException {
-        for(Ref ref: git.branchList().call()){
-            if(ref.getName().endsWith(branch)){
-                return ref.getObjectId();
-            }
+    static String getDefaultBranchName(Git git) throws GitAPIException {
+        final List<Ref> refs = git.branchList()
+                .setContains("HEAD")
+                .setListMode(ListBranchCommand.ListMode.ALL)
+                .call();
+
+            return refs.get(refs.size() - 1).getName();
+    }
+
+    static Set<RevCommit> getRevCommitFromBranch(Git git, String branchId) {
+        Set<RevCommit> revCommits;
+
+        try {
+            final Iterable<RevCommit> commits = git.log().add(git.getRepository().resolve(branchId)).call();
+
+            revCommits = StreamSupport.stream(commits.spliterator(), false)
+                    .filter(c -> isInBranch(git, c, branchId))
+                    .collect(Collectors.toSet());
+        } catch (IOException | GitAPIException e) {
+            revCommits = Collections.emptySet();
         }
 
-        return null;
+        return revCommits;
+    }
+
+    static boolean isInBranch(Git git, RevCommit commit, String branchId) {
+        try{
+            Map<ObjectId, String> branches = git
+                    .nameRev()
+                    .addPrefix("refs/heads")
+                    .add(commit.getId())
+                    .call();
+
+            return branches.values().stream()
+                    .map(n -> n.indexOf('~') == -1 ? n : n.substring(0, n.indexOf('~')))
+                    .anyMatch(branchId::endsWith);
+        } catch (GitAPIException | MissingObjectException e) {
+            return false;
+        }
     }
 
     static boolean isInInterval(Instant date, Instant startDate, Instant endDate){
