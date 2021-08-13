@@ -26,6 +26,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import lu.uni.serval.commons.git.Helpers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -216,29 +218,12 @@ class CommitCollectorTest {
         assertFalse(commits.get(1).getDifference().getFormatted().isEmpty());
     }
 
-    @Test
-    void testCherryPickWithShortTag() throws GitAPIException, IOException {
+    @ParameterizedTest
+    @ValueSource(strings = {"tag1", "tags/tag1", "refs/tags/tag1"})
+    void testCherryPickWithShortTag(String tag) throws GitAPIException, IOException {
         final List<GitCommit> commits = new CommitCollector()
                 .forGit(git3)
-                .cherryPick("tag1");
-
-        assertEquals(1, commits.size());
-    }
-
-    @Test
-    void testCherryPickWithMediumTag() throws GitAPIException, IOException {
-        final List<GitCommit> commits = new CommitCollector()
-                .forGit(git3)
-                .cherryPick("tags/tag1");
-
-        assertEquals(1, commits.size());
-    }
-
-    @Test
-    void testCherryPickWithLongTag() throws GitAPIException, IOException {
-        final List<GitCommit> commits = new CommitCollector()
-                .forGit(git3)
-                .cherryPick("refs/tags/tag1");
+                .cherryPick(tag);
 
         assertEquals(1, commits.size());
     }
