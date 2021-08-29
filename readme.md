@@ -3,6 +3,7 @@
 ![build](https://github.com/UL-SnT-Serval/java-commons-git-utils/workflows/build/badge.svg)
 ![codecov](.github/badges/jacoco.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/lu.uni.serval/commons-git-utils/badge.svg)](https://search.maven.org/search?q=g:lu.uni.serval%20commons-git-utils)
 
 ## Description
 
