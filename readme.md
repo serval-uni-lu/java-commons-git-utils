@@ -11,7 +11,7 @@ Git Utils is a library to facilitate the interaction with git repositories with 
 
 ## Build requirements
 
-* Java Development Kit (JDK) 8 or higher
+* Java Development Kit (JDK) 11 or higher
 * Maven 3.6.0 or higher
 
 ## Build from source
@@ -19,16 +19,6 @@ Git Utils is a library to facilitate the interaction with git repositories with 
 1. Clone the project on your machine using ```git clone https://github.com/UL-SnT-Serval/java-commons-git-utils.git``` .
 2. Move to the directory.
 3. run the Maven command ```mvn clean install```.
-
-## Getting from Maven Central
-
-```xml
-<dependency>
-  <groupId>lu.uni.serval</groupId>
-  <artifactId>commons-git-utils</artifactId>
-  <version>0.1.11</version>
-</dependency>
-```
 
 License
 -------
