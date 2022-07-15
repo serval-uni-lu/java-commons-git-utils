@@ -4,7 +4,7 @@
 
     <groupId>lu.uni.serval</groupId>
     <artifactId>commons-git-utils</artifactId>
-    <version>0.1.13</version>
+    <version>0.1.14-SNAPSHOT</version>
 
     <name>Git Utils</name>
     <url>https://github.com/serval-uni-lu/java-commons-git-utils</url>
