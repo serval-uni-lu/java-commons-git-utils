@@ -46,11 +46,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class GitUtilsTest {
     private static Git git2;
     private static Git git3;
+    private static Git git4;
 
     @BeforeAll
     static void setup() {
         git2 = Helpers.setRepository("git-repos/git-2.zip");
         git3 = Helpers.setRepository("git-repos/git-3.zip");
+        git4 = Helpers.setRepository("git-repos/git-4.zip");
     }
 
     @Test
@@ -206,9 +208,27 @@ class GitUtilsTest {
         assertTrue(commit.isPresent());
     }
 
+    @Test
+    void testDifferentBranch() throws InvalidGitRepositoryException, IOException, GitAPIException {
+        final File folder = new File(FileUtils.getTempDirectory(), "test-git-utils");
+        folder.deleteOnExit();
+
+        final LocalRepository repo = GitUtils.loadCurrentRepository(
+                git4.getRepository().getDirectory().getAbsolutePath(),
+                "",
+                folder,
+                "main"
+        );
+
+        final List<Ref> branches = repo.getGit().branchList().call();
+        assertEquals(1, branches.size());
+        assertTrue(GitUtils.isBranchExist(repo.getGit(), "main"));
+    }
+
     @AfterAll
     static void teardown(){
         Helpers.deleteRepository(git2);
         Helpers.deleteRepository(git3);
+        Helpers.deleteRepository(git4);
     }
 }

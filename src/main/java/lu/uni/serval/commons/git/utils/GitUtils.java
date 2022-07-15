@@ -87,7 +87,7 @@ public class GitUtils {
         return localRepository;
     }
 
-    public static LocalRepository loadCurrentRepository(String url, String token, File localFolder, String branch)
+    public static LocalRepository loadCurrentRepository(String uri, String token, File localFolder, String branch)
             throws IOException, InvalidGitRepositoryException {
         if(localFolder.exists()){
             FileUtils.delete(localFolder, FileUtils.RECURSIVE);
@@ -100,9 +100,11 @@ public class GitUtils {
 
         try{
             Git git = Git.cloneRepository()
-                    .setURI(url)
+                    .setURI(uri)
                     .setCredentialsProvider(credentials)
-                    .setBranchesToClone(branch == null ? Collections.emptyList() : Collections.singleton(branch))
+                    .setBranchesToClone(branch == null
+                            ? Collections.emptyList()
+                            : Collections.singleton("refs/heads/" + branch))
                     .setBranch(branch)
                     .setDirectory(localFolder)
                     .call();
@@ -111,7 +113,7 @@ public class GitUtils {
         }
         catch (GitAPIException e){
             throw new InvalidGitRepositoryException(String.format("Failed to load repository %s: %s",
-                    url, e.getMessage()));
+                    uri, e.getMessage()));
         }
 
         return localRepository;
